@@ -399,20 +399,36 @@ const ret = SMILib.smiInit('Test');
 
 console.log('smiInit - %d', ret);
 
-SMILib.smiSetPath(
-  'C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/iana;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/irtf;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/site;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/tubs',
-);
+SMILib.smiSetPath('C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/iana;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/irtf;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/site;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/tubs;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/test');
+
 
 console.log('smiGetPath - %s', SMILib.smiGetPath());
 
-console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-SMI'));
-console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-TC'));
-console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-CONF'));
-console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1155-SMI'));
-console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
-console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
-console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
 
+function mibLoader (mibs) {
+
+  /*
+    Load default mibs
+  */
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-SMI'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-TC'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-CONF'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1155-SMI'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-COMMON-MIB'));
+
+  /*
+    Load user's mibs
+  */
+
+  for (let i = 0; i < mibs; i++) {
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule(mibs[i]));
+  }
+}
+
+mibLoader([])
 /* var buff = SMILib.smiGetFirstModule();
 
 while (buff.length > 0) {
@@ -436,7 +452,18 @@ while (buff.length > 0) {
   buff = SMILib.smiGetNextModule(buff);
 } */
 
-const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.2.1.2.2.1.2');
+// -- ** +-iso(1)
+// -- **   +-org(3)
+// -- **     +-dod(6)
+// -- **       +-internet(1)
+// -- **         +-private(4)
+// -- **           +-enterprises(1)
+// -- **             +-rsRoot(2566)
+// -- **               +-rsCommon(123)
+// -- **               +-rsProduct(127)
+
+// const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.2.1.2.2.1.2');
+const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
 const smiNode = nodeBuff.deref();
 
 console.log(`Node - ${smiNode.name}`);
@@ -510,4 +537,10 @@ if (relatedNodeBuff.length > 0) {
     ).join('.')})`,
   );
   console.log(`   related description-> ${smiReleatedNode.description}`);
+}
+
+
+
+module.exports = {
+
 }
