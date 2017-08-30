@@ -407,8 +407,8 @@ SMILib.smiSetPath('C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projec
 console.log('smiGetPath - %s', SMILib.smiGetPath());
 
 
-function mibLoader (mibs) {
-
+var mibLoader = function  (mibs) {
+  console.log(mibs);
   /*
     Load default mibs
   */
@@ -425,35 +425,34 @@ function mibLoader (mibs) {
     Load user's mibs
   */
 
-  for (let i = 0; i < mibs; i++) {
+  for (let i = 0; i < mibs.length; i++) {
     console.log('smiLoadModule - %s', SMILib.smiLoadModule(mibs[i]));
   }
 }
 
-mibLoader([])
+mibLoader(['RS-XX9-AIR-COOLING-MIB', 'RS-XX9-ATSC-MIB'])
 
 var buff = SMILib.smiGetFirstModule();
 let test = [];
-let final = [];
 
 // const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.2.1.2.2.1.2');
 // let nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
 
 
+var getData = function () {
+  while (buff.length > 0) {
+    var smiModule = buff.deref();
+   // console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
+    var nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
+    while (nodeBuff.length > 0) {
+      let smiNode = nodeBuff.deref();
+      let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
+      let smiDecl = SmiDecl.get(smiNode.decl).key;
+      let smiAccess = SmiAccess.get(smiNode.access).key;
+      let smiStatus = SmiStatus.get(smiNode.status).key;
+      let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
+      
 
-while (buff.length > 0) {
-  var smiModule = buff.deref();
- // console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
-  var nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
-  while (nodeBuff.length > 0) {
-    let smiNode = nodeBuff.deref();
-    let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
-    let smiDecl = SmiDecl.get(smiNode.decl).key;
-    let smiAccess = SmiAccess.get(smiNode.access).key;
-    let smiStatus = SmiStatus.get(smiNode.status).key;
-    let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
-    
-   
       test.push({
         'Node' : smiNode.name,
         'address' : oid,
@@ -466,22 +465,22 @@ while (buff.length > 0) {
       });
 
 
-    // console.log('Node - ' + smiNode.name);
-    // console.log('   OID->' + new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.'));
-    // console.log('   SmiDecl->' + SmiDecl.get(smiNode.decl).key);
-    // console.log('   SmiAccess->' + SmiAccess.get(smiNode.access).key);
-    // console.log('   SmiStatus->' + SmiStatus.get(smiNode.status).key);
-    // console.log('   SmiNodekind->' + SmiNodekindEnum.get(smiNode.nodekind).key);
-    // console.log('   Description->' + smiNode.description);
-    // console.log('   Format->' + smiNode.format);
-    
-    nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
-  }
-  buff = SMILib.smiGetNextModule(buff);
-} 
+      // console.log('Node - ' + smiNode.name);
+      // console.log('   OID->' + new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.'));
+      // console.log('   SmiDecl->' + SmiDecl.get(smiNode.decl).key);
+      // console.log('   SmiAccess->' + SmiAccess.get(smiNode.access).key);
+      // console.log('   SmiStatus->' + SmiStatus.get(smiNode.status).key);
+      // console.log('   SmiNodekind->' + SmiNodekindEnum.get(smiNode.nodekind).key);
+      // console.log('   Description->' + smiNode.description);
+      // console.log('   Format->' + smiNode.format);
+      
+      nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
+    }
+    buff = SMILib.smiGetNextModule(buff);
+  } 
 
-
-  //buggy has dupe 1.3 and ignores 0 && 0,0
+}
+  //buggy has dupes 1.3 and ignores 0 && 0,0
     var sortSubroutine = function(args1, args2) {
       
 
@@ -528,13 +527,14 @@ while (buff.length > 0) {
       };
     }
 
+    
+    var str = JSON.stringify(test);
+    fs.writeFileSync(resolve('testOriginal.txt'), str);
     sortSubroutine(test, test);
     var str = JSON.stringify(test);
     fs.writeFileSync(resolve('test.txt'), str);
-    
 
 
-console.log(JSON.stringify(test))
 
 // console.log(`Node - ${smiNode.name}`);
 // console.log(
@@ -543,8 +543,8 @@ console.log(JSON.stringify(test))
 //   ).join('.')}`,
 // );
 
-var nodeBuff3 = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
-var temp = '1.3.6.1.4.1.2566.127'.split('.').length;
+// var nodeBuff3 = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
+// var temp = '1.3.6.1.4.1.2566.127'.split('.').length;
 
 //console.log(SMILib)
 // let nodeBuff2 = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
@@ -557,68 +557,70 @@ var temp = '1.3.6.1.4.1.2566.127'.split('.').length;
 // console.log(`   Format-> ${smiNode.format}`);
 
 
-const typeBuff = SMILib.smiGetNodeType(nodeBuff);
-if (typeBuff.length > 0) {
-  const smiNodeType = typeBuff.deref();
-  console.log(
-    `   type->BaseType-> ${SmiBasetype.get(smiNodeType.basetype).key}`,
-  );
-  console.log(`   type->Format-> ${smiNodeType.format}`);
-  let rangeBuff = SMILib.smiGetFirstRange(typeBuff);
-  while (rangeBuff.length > 0) {
-    const smiRange = rangeBuff.deref();
-    console.log(
-      `   type->Range-> ${smiValue2String(
-        smiRange.minValue,
-      )} to ${smiValue2String(smiRange.maxValue)}`,
-    );
-    rangeBuff = SMILib.smiGetNextRange(rangeBuff);
-  }
+// const typeBuff = SMILib.smiGetNodeType(nodeBuff);
+// if (typeBuff.length > 0) {
+//   const smiNodeType = typeBuff.deref();
+//   console.log(
+//     `   type->BaseType-> ${SmiBasetype.get(smiNodeType.basetype).key}`,
+//   );
+//   console.log(`   type->Format-> ${smiNodeType.format}`);
+//   let rangeBuff = SMILib.smiGetFirstRange(typeBuff);
+//   while (rangeBuff.length > 0) {
+//     const smiRange = rangeBuff.deref();
+//     console.log(
+//       `   type->Range-> ${smiValue2String(
+//         smiRange.minValue,
+//       )} to ${smiValue2String(smiRange.maxValue)}`,
+//     );
+//     rangeBuff = SMILib.smiGetNextRange(rangeBuff);
+//   }
 
-  let enumBuff = SMILib.smiGetFirstNamedNumber(typeBuff);
-  while (enumBuff.length > 0) {
-    const smiEnum = enumBuff.deref();
-    console.log(
-      `   type->Enum-> ${smiEnum.name}(${smiValue2String(smiEnum.value)})`,
-    );
-    enumBuff = SMILib.smiGetNextNamedNumber(enumBuff);
-  }
-}
+//   let enumBuff = SMILib.smiGetFirstNamedNumber(typeBuff);
+//   while (enumBuff.length > 0) {
+//     const smiEnum = enumBuff.deref();
+//     console.log(
+//       `   type->Enum-> ${smiEnum.name}(${smiValue2String(smiEnum.value)})`,
+//     );
+//     enumBuff = SMILib.smiGetNextNamedNumber(enumBuff);
+//   }
+// }
 
-let elementBuff = SMILib.smiGetFirstElement(nodeBuff);
-while (elementBuff.length > 0) {
-  const elementNodeBuff = SMILib.smiGetElementNode(elementBuff);
-  if (elementNodeBuff.length > 0) {
-    smiElementNode = elementNodeBuff.deref();
-    console.log(
-      `   element-> ${smiElementNode.name}(${new Uint32Array(
-        smiElementNode.oid.reinterpret(smiElementNode.oidlen * 4).buffer,
-      ).join('.')})`,
-    );
-  }
-  elementBuff = SMILib.smiGetNextElement(elementBuff);
-}
+// let elementBuff = SMILib.smiGetFirstElement(nodeBuff);
+// while (elementBuff.length > 0) {
+//   const elementNodeBuff = SMILib.smiGetElementNode(elementBuff);
+//   if (elementNodeBuff.length > 0) {
+//     smiElementNode = elementNodeBuff.deref();
+//     console.log(
+//       `   element-> ${smiElementNode.name}(${new Uint32Array(
+//         smiElementNode.oid.reinterpret(smiElementNode.oidlen * 4).buffer,
+//       ).join('.')})`,
+//     );
+//   }
+//   elementBuff = SMILib.smiGetNextElement(elementBuff);
+// }
 
-let refinementBuff = SMILib.smiGetFirstRefinement(nodeBuff);
-while (refinementBuff.length > 0) {
-  const smiRefinement = refinementBuff.deref();
-  console.log(`   refinement-> ${smiRefinement.description}`);
-  refinementBuff = SMILib.smiGetNextRefinement(refinementBuff);
-}
+// let refinementBuff = SMILib.smiGetFirstRefinement(nodeBuff);
+// while (refinementBuff.length > 0) {
+//   const smiRefinement = refinementBuff.deref();
+//   console.log(`   refinement-> ${smiRefinement.description}`);
+//   refinementBuff = SMILib.smiGetNextRefinement(refinementBuff);
+// }
 
-const relatedNodeBuff = SMILib.smiGetRelatedNode(nodeBuff);
-if (relatedNodeBuff.length > 0) {
-  const smiReleatedNode = relatedNodeBuff.deref();
-  console.log(
-    `   related node-> ${smiReleatedNode.name}(${new Uint32Array(
-      smiReleatedNode.oid.reinterpret(smiReleatedNode.oidlen * 4).buffer,
-    ).join('.')})`,
-  );
-  console.log(`   related description-> ${smiReleatedNode.description}`);
-}
+// const relatedNodeBuff = SMILib.smiGetRelatedNode(nodeBuff);
+// if (relatedNodeBuff.length > 0) {
+//   const smiReleatedNode = relatedNodeBuff.deref();
+//   console.log(
+//     `   related node-> ${smiReleatedNode.name}(${new Uint32Array(
+//       smiReleatedNode.oid.reinterpret(smiReleatedNode.oidlen * 4).buffer,
+//     ).join('.')})`,
+//   );
+//   console.log(`   related description-> ${smiReleatedNode.description}`);
+// }
 
 
 
 module.exports = {
+
+  mibLoader: mibLoader
 
 }
