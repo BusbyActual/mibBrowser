@@ -241,7 +241,7 @@ var SMILib = ffi.Library('./libsmi-0.4.8/build/libsmi.dll', {
     var nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
     while (nodeBuff.length > 0) {
       var smiNode = nodeBuff.deref();
-      var i;
+  
       console.log('   Node - ' + smiNode.name);
       console.log('   OID->' + new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.'));
       console.log('   SmiDecl->' + SmiDecl.get(smiNode.decl).key);

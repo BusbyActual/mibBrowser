@@ -5,6 +5,8 @@ const StructType = require('ref-struct');
 const union = require('ref-union');
 const ArrayType = require('ref-array');
 const Enum = require('enum');
+const fs = require('fs');
+const resolve = require('path').resolve;
 
 /* SmiLanguage -- language of an actual MIB module                           */
 const SmiLanguage = new Enum({
@@ -429,55 +431,131 @@ function mibLoader (mibs) {
 }
 
 mibLoader([])
-/* var buff = SMILib.smiGetFirstModule();
+
+var buff = SMILib.smiGetFirstModule();
+let test = [];
+let final = [];
+
+// const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.2.1.2.2.1.2');
+// let nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
+
+
 
 while (buff.length > 0) {
   var smiModule = buff.deref();
-  console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
+ // console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
   var nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
   while (nodeBuff.length > 0) {
-    var smiNode = nodeBuff.deref();
+    let smiNode = nodeBuff.deref();
+    let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
+    let smiDecl = SmiDecl.get(smiNode.decl).key;
+    let smiAccess = SmiAccess.get(smiNode.access).key;
+    let smiStatus = SmiStatus.get(smiNode.status).key;
+    let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
     
-    console.log('Node - ' + smiNode.name);
-    console.log('   OID->' + new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.'));
-    console.log('   SmiDecl->' + SmiDecl.get(smiNode.decl).key);
-    console.log('   SmiAccess->' + SmiAccess.get(smiNode.access).key);
-    console.log('   SmiStatus->' + SmiStatus.get(smiNode.status).key);
-    console.log('   SmiNodekind->' + SmiNodekindEnum.get(smiNode.nodekind).key);
-    console.log('   Description->' + smiNode.description);
-    console.log('   Format->' + smiNode.format);
+   
+      test.push({
+        'Node' : smiNode.name,
+        'address' : oid,
+        'SmiDecl' : smiDecl,
+        'SmiAccess' : smiAccess,
+        'SmiStatus' : smiStatus,
+        'SmiNodekind' : smiNodeKind,
+        'Description' : smiNode.description,
+        'Format' : smiNode.format
+      });
+
+
+    // console.log('Node - ' + smiNode.name);
+    // console.log('   OID->' + new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.'));
+    // console.log('   SmiDecl->' + SmiDecl.get(smiNode.decl).key);
+    // console.log('   SmiAccess->' + SmiAccess.get(smiNode.access).key);
+    // console.log('   SmiStatus->' + SmiStatus.get(smiNode.status).key);
+    // console.log('   SmiNodekind->' + SmiNodekindEnum.get(smiNode.nodekind).key);
+    // console.log('   Description->' + smiNode.description);
+    // console.log('   Format->' + smiNode.format);
     
     nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
   }
   buff = SMILib.smiGetNextModule(buff);
-} */
+} 
 
-// -- ** +-iso(1)
-// -- **   +-org(3)
-// -- **     +-dod(6)
-// -- **       +-internet(1)
-// -- **         +-private(4)
-// -- **           +-enterprises(1)
-// -- **             +-rsRoot(2566)
-// -- **               +-rsCommon(123)
-// -- **               +-rsProduct(127)
 
-// const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.2.1.2.2.1.2');
-const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
-const smiNode = nodeBuff.deref();
+  //buggy has dupe 1.3 and ignores 0 && 0,0
+    var sortSubroutine = function(args1, args2) {
+      
 
-console.log(`Node - ${smiNode.name}`);
-console.log(
-  `   OID-> ${new Uint32Array(
-    smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer,
-  ).join('.')}`,
-);
-console.log(`   SmiDecl-> ${SmiDecl.get(smiNode.decl).key}`);
-console.log(`   SmiAccess-> ${SmiAccess.get(smiNode.access).key}`);
-console.log(`   SmiStatus-> ${SmiStatus.get(smiNode.status).key}`);
-console.log(`   SmiNodekind-> ${SmiNodekindEnum.get(smiNode.nodekind).key}`);
-console.log(`   Description-> ${smiNode.description}`);
-console.log(`   Format-> ${smiNode.format}`);
+      for (var n = 0; n < args2.length; n++) {
+     
+        var addy2 = args2[n].address;
+        var curArgLen = addy2.split('.').length + 1;
+        var grandChildren = [];
+
+        for (var i = 0; i < args1.length; i++) {
+          
+          var addy1 = args1[i].address.slice(0, addy2.length);
+          var tempArgLen = args1[i].address.split('.').length;
+
+          if (addy1 === addy2) {
+            var child = args1.splice(i, 1);
+            i--;
+
+            // is it a child or grandchild?
+            // console.log(curArgLen, tempArgLen)
+            if(curArgLen === tempArgLen) {
+              args2[n].children ? args2[n].children.push(child[0]) : args2[n].children = child;
+            } else {
+              grandChildren.push(child[0]);
+            }
+          }
+        
+        }
+
+        // sort by last number in oid
+        if(args2[n] && args2[n].children) {
+          var len = args2[n].children[0].address.split('.').length - 1;
+  
+          args2[n].children.sort(function(a,b) { 
+            return a.address.split('.')[len] - b.address.split('.')[len];
+          })
+        }
+    
+        // if other addresses continue.
+
+        if(grandChildren.length) {
+          sortSubroutine(grandChildren, args2[n].children);
+        }
+      };
+    }
+
+    sortSubroutine(test, test);
+    var str = JSON.stringify(test);
+    fs.writeFileSync(resolve('test.txt'), str);
+    
+
+
+console.log(JSON.stringify(test))
+
+// console.log(`Node - ${smiNode.name}`);
+// console.log(
+//   `   OID-> ${new Uint32Array(
+//     smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer,
+//   ).join('.')}`,
+// );
+
+var nodeBuff3 = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
+var temp = '1.3.6.1.4.1.2566.127'.split('.').length;
+
+//console.log(SMILib)
+// let nodeBuff2 = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
+
+// console.log(`   SmiDecl-> ${SmiDecl.get(smiNode.decl).key}`);
+// console.log(`   SmiAccess-> ${SmiAccess.get(smiNode.access).key}`);
+// console.log(`   SmiStatus-> ${SmiStatus.get(smiNode.status).key}`);
+// console.log(`   SmiNodekind-> ${SmiNodekindEnum.get(smiNode.nodekind).key}`);
+// console.log(`   Description-> ${smiNode.description}`);
+// console.log(`   Format-> ${smiNode.format}`);
+
 
 const typeBuff = SMILib.smiGetNodeType(nodeBuff);
 if (typeBuff.length > 0) {
