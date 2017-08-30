@@ -1,0 +1,17 @@
+{
+  "name": "libsmi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "libsmi.js",
+  "dependencies": {
+    "ffi": "^2.2.0",
+    "ref": "^1.3.4",
+    "ref-struct": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
