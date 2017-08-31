@@ -16,14 +16,12 @@ app.get('/', function (req, res) {
 app.post('/mibs', function (req, res) {
   const body = req.body
   mibs.mibLoader(body.mibs)
+
+  let test = mibs.getData();
+
+  mibs.sortSubroutine(test, test);
   res.send(`You sent: ${body.mibs}`)
 })
-
-// app.post('/sms', function (req, res) {
-//   const body = req.body
-//   res.set('Content-Type', 'text/plain')
-//   res.send(`You sent: ${body.href} to Express`)
-// })
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
