@@ -407,44 +407,19 @@ SMILib.smiSetPath('C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projec
 console.log('smiGetPath - %s', SMILib.smiGetPath());
 
 
-var mibLoader = function  (mibs) {
-  console.log(mibs);
-  /*
-    Load default mibs
-  */
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-SMI'));
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-TC'));
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-CONF'));
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1155-SMI'));
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
-  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-COMMON-MIB'));
-
-  /*
-    Load user's mibs
-  */
-
-  for (let i = 0; i < mibs.length; i++) {
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule(mibs[i]));
-  }
-}
-
-mibLoader(['RS-XX9-AIR-COOLING-MIB', 'RS-XX9-ATSC-MIB'])
-
-var buff = SMILib.smiGetFirstModule();
-let test = [];
-
-// const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.2.1.2.2.1.2');
-// let nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
 
 
 var getData = function () {
+  let test = [];
+  var buff = SMILib.smiGetFirstModule();
+  let ANY = 0xffff;
   while (buff.length > 0) {
+    //console.log('outer ran')
     var smiModule = buff.deref();
    // console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
-    var nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
+    var nodeBuff = SMILib.smiGetFirstNode(buff, ANY);
     while (nodeBuff.length > 0) {
+      //console.log('inner ran')
       let smiNode = nodeBuff.deref();
       let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
       let smiDecl = SmiDecl.get(smiNode.decl).key;
@@ -464,22 +439,46 @@ var getData = function () {
         'Format' : smiNode.format
       });
 
-
-      // console.log('Node - ' + smiNode.name);
-      // console.log('   OID->' + new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.'));
-      // console.log('   SmiDecl->' + SmiDecl.get(smiNode.decl).key);
-      // console.log('   SmiAccess->' + SmiAccess.get(smiNode.access).key);
-      // console.log('   SmiStatus->' + SmiStatus.get(smiNode.status).key);
-      // console.log('   SmiNodekind->' + SmiNodekindEnum.get(smiNode.nodekind).key);
-      // console.log('   Description->' + smiNode.description);
-      // console.log('   Format->' + smiNode.format);
       
-      nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
+      nodeBuff = SMILib.smiGetNextNode(nodeBuff, ANY);
     }
     buff = SMILib.smiGetNextModule(buff);
   } 
 
+  return test;
 }
+
+  var mibLoader = function  (mibs) {
+    /*
+      Load default mibs
+    */
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-SMI'));
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-TC'));
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-CONF'));
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1155-SMI'));
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-COMMON-MIB'));
+
+    /*
+      Load user's mibs
+    */
+
+    for (let i = 0; i < mibs.length; i++) {
+      console.log('smiLoadModule - %s', SMILib.smiLoadModule(mibs[i]));
+    }
+
+    module.exports.getData()
+}
+
+//mibLoader([]) 
+
+
+// const nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.2.1.2.2.1.2');
+// let nodeBuff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
+
+
   //buggy has dupes 1.3 and ignores 0 && 0,0
     var sortSubroutine = function(args1, args2) {
       
@@ -527,12 +526,12 @@ var getData = function () {
       };
     }
 
-    
-    var str = JSON.stringify(test);
-    fs.writeFileSync(resolve('testOriginal.txt'), str);
-    sortSubroutine(test, test);
-    var str = JSON.stringify(test);
-    fs.writeFileSync(resolve('test.txt'), str);
+
+    // var str = JSON.stringify(test);
+    // fs.writeFileSync(resolve('testOriginal.txt'), str);
+    // sortSubroutine(test, test);
+    // var str = JSON.stringify(test);
+    // fs.writeFileSync(resolve('test.txt'), str);
 
 
 
@@ -621,6 +620,8 @@ var getData = function () {
 
 module.exports = {
 
-  mibLoader: mibLoader
+  mibLoader: mibLoader,
+  getData: getData,
+  sortSubroutine: sortSubroutine
 
 }
