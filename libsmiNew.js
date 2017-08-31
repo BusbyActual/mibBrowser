@@ -409,17 +409,14 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
 
 
 
-var getData = function () {
+let getData = function () {
   let test = [];
-  var buff = SMILib.smiGetFirstModule();
-  let ANY = 0xffff;
+  let buff = SMILib.smiGetFirstModule();
   while (buff.length > 0) {
-    //console.log('outer ran')
-    var smiModule = buff.deref();
+    let smiModule = buff.deref();
    // console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
-    var nodeBuff = SMILib.smiGetFirstNode(buff, ANY);
+    let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
     while (nodeBuff.length > 0) {
-      //console.log('inner ran')
       let smiNode = nodeBuff.deref();
       let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
       let smiDecl = SmiDecl.get(smiNode.decl).key;
@@ -440,15 +437,14 @@ var getData = function () {
       });
 
       
-      nodeBuff = SMILib.smiGetNextNode(nodeBuff, ANY);
+      nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
     }
     buff = SMILib.smiGetNextModule(buff);
   } 
-
   return test;
 }
 
-  var mibLoader = function  (mibs) {
+  let mibLoader = function  (mibs) {
     /*
       Load default mibs
     */
@@ -480,26 +476,23 @@ var getData = function () {
 
 
   //buggy has dupes 1.3 and ignores 0 && 0,0
-    var sortSubroutine = function(args1, args2) {
+    let sortSubroutine = function(args1, args2) {
       
 
-      for (var n = 0; n < args2.length; n++) {
-     
-        var addy2 = args2[n].address;
-        var curArgLen = addy2.split('.').length + 1;
-        var grandChildren = [];
+      for (let n = 0; n < args2.length; n++) {
+        let addy2 = args2[n].address;
+        let curArgLen = addy2.split('.').length + 1;
+        let grandChildren = [];
 
-        for (var i = 0; i < args1.length; i++) {
-          
-          var addy1 = args1[i].address.slice(0, addy2.length);
-          var tempArgLen = args1[i].address.split('.').length;
+        for (let i = 0; i < args1.length; i++) {
+          let addy1 = args1[i].address.slice(0, addy2.length);
+          let tempArgLen = args1[i].address.split('.').length;
 
           if (addy1 === addy2) {
-            var child = args1.splice(i, 1);
+            let child = args1.splice(i, 1);
             i--;
 
             // is it a child or grandchild?
-            // console.log(curArgLen, tempArgLen)
             if(curArgLen === tempArgLen) {
               args2[n].children ? args2[n].children.push(child[0]) : args2[n].children = child;
             } else {
@@ -511,7 +504,7 @@ var getData = function () {
 
         // sort by last number in oid
         if(args2[n] && args2[n].children) {
-          var len = args2[n].children[0].address.split('.').length - 1;
+          let len = args2[n].children[0].address.split('.').length - 1;
   
           args2[n].children.sort(function(a,b) { 
             return a.address.split('.')[len] - b.address.split('.')[len];
@@ -519,19 +512,11 @@ var getData = function () {
         }
     
         // if other addresses continue.
-
         if(grandChildren.length) {
           sortSubroutine(grandChildren, args2[n].children);
         }
       };
     }
-
-
-    // var str = JSON.stringify(test);
-    // fs.writeFileSync(resolve('testOriginal.txt'), str);
-    // sortSubroutine(test, test);
-    // var str = JSON.stringify(test);
-    // fs.writeFileSync(resolve('test.txt'), str);
 
 
 
