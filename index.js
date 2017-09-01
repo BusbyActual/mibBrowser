@@ -19,7 +19,8 @@ app.post('/mibs', function (req, res) {
 
   let test = mibs.getData();
 
-  mibs.sortSubroutine(test, test);
+  mibs.sortSubroutine(test);
+  console.log(test)
   res.send(`You sent: ${body.mibs}`)
 })
 
