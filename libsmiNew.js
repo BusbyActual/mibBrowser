@@ -418,7 +418,7 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
     console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
     console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
     console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-COMMON-MIB'));
+    // console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-COMMON-MIB'));
 
     /*
       Load user's mibs
@@ -433,11 +433,12 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
 
 let getData = function () {
   let data = [];
-  let buff = SMILib.smiGetFirstModule();
+  // let buff = SMILib.smiGetFirstModule();
+  let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
   while (buff.length > 0) {
     let smiModule = buff.deref();
    // console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
-    let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
+    let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
     while (nodeBuff.length > 0) {
       let smiNode = nodeBuff.deref();
       let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
@@ -455,7 +456,8 @@ let getData = function () {
         'SmiStatus' : smiStatus,
         'SmiNodekind' : smiNodeKind,
         'Description' : smiNode.description,
-        'Format' : smiNode.format
+        'Format' : smiNode.format,
+        'children': []
       });
 
       
@@ -473,12 +475,14 @@ mibLoader([])
   
   let polish = function(arr) {
     let dictionary = {'0': 1, '0.0': 1};
+    
     let data = arr.filter(function(item) {
-      if(!dictionary[item.address]) {
+      if (!dictionary[item.address]) {
           dictionary[item.address] = 1;
           return item;
         }
     })
+
     return data;
   }
 
@@ -530,40 +534,53 @@ mibLoader([])
 
   let sortSubroutine = function(arr) {
     
-    let base = { size: 99 };
-    // find smallest. Can possibly go off first index
-    for (let n = 0; n < arr.length; n++) {
-      if(base > arr[n].length) {
+    let base = arr[0];
+    base.sise = arr[0].address.split('.').length;
+    base.index = 0;
+
+    for (let n = 1; n < arr.length; n++) {
+      let address = arr[n].address.slice(0, base.address.length);
+      let len = arr[n].address.split('.').length;
+
+      if (address === base.address) {
+        let temp = arr.splice(n, n + 1)[0];
+        base.children.push(temp);
+        n--;
+
+        // if oid root is same length and the last char is bigger change base to bigger oid. ex 1.2 => 1.3
+      } else if (base.size === len && arr[n].address.split('.')[len] > base.address.split('.')[base.size]) {
         base = arr[n];
-        base.size = arr[n].address.split('.').length;
+        base.size = len;
         base.index = n;
-        base.children = [];
-      }
-    }
-
-    for (let x = base.index; x < arr.length; x++) {
-      let address = arr[x].address.slice(0, base.length);
-      let len = arr[x].split('.').length;
+      } 
       
-      if(address === base.address) {
-        base.children.push(arr.slice(x, x + 1));
-      } else if (base.size === len) {
 
-        // if sibling update base
-        if(arr[x].address.split('.')[len] > base.address.split('.')[len]) {
-          base = arr[x];
-          base.size = arr[n].address.split('.').length;
-          base.index = n;
-          base.children = [];
-        }
-      }
     }
+
+    // for (let x = base.index; x < arr.length; x++) {
+    //   let address = arr[x].address.slice(0, base.length);
+    //   let len = arr[x].address.split('.').length;
+      
+    //   if (address === base.address) {
+    //     base.children.push(arr.slice(x, x + 1));
+    //   } else if (base.size === len) {
+
+    //     // if sibling update base
+    //     if (arr[x].address.split('.')[len] > base.address.split('.')[len]) {
+    //       base = arr[x];
+    //       base.size = arr[n].address.split('.').length;
+    //       base.index = n;
+    //       base.children = [];
+    //     }
+    //   }
+    // }
 
     for (let z = 0; z < arr.length; z++) {
-      if(arr[z].children) {
-        sortSubroutine(arr[z].children)
+      if (arr[z].children.length) {
+       sortSubroutine(arr[z].children)
       }
     }
+
     // // sort by last number in oid
     // if(args2[n] && args2[n].children) {
     //   let len = args2[n].children[0].address.split('.').length - 1;
@@ -599,7 +616,8 @@ mibLoader([])
 // var temp = '1.3.6.1.4.1.2566.127'.split('.').length;
 
 //console.log(SMILib)
-// let nodeBuff2 = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
+
+// console.log(nodeBuff2)
 
 // console.log(`   SmiDecl-> ${SmiDecl.get(smiNode.decl).key}`);
 // console.log(`   SmiAccess-> ${SmiAccess.get(smiNode.access).key}`);
@@ -675,6 +693,7 @@ module.exports = {
 
   mibLoader: mibLoader,
   getData: getData,
-  sortSubroutine: sortSubroutine
+  sortSubroutine: sortSubroutine,
+  polish: polish
 
 }
