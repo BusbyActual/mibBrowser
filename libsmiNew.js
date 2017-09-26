@@ -418,26 +418,24 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
     console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
     console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
     console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
-    // console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-COMMON-MIB'));
 
     /*
       Load user's mibs
     */
-
     for (let i = 0; i < mibs.length; i++) {
       console.log('smiLoadModule - %s', SMILib.smiLoadModule(mibs[i]));
     }
 
   }
 
-
+// figure out how to determine first meaningful node?
 let getData = function () {
   let data = [];
   // let buff = SMILib.smiGetFirstModule();
   let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
   while (buff.length > 0) {
     let smiModule = buff.deref();
-   // console.log('Module - %s, %d', smiModule.name, smiModule.conformance);
+
     let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
     while (nodeBuff.length > 0) {
       let smiNode = nodeBuff.deref();
@@ -466,17 +464,13 @@ let getData = function () {
     buff = SMILib.smiGetNextModule(buff);
   } 
 
-  //console.log(data);
-  fs.writeFileSync('test2.txt', CircularJSON.stringify(data))
-
   return data;
 }
 
 
 mibLoader([]) 
-
-// console.log(temp)
   
+  // remote dupes if any and null defaults
   let polish = function(arr) {
     let dictionary = {'0': 1, '0.0': 1};
     
@@ -521,20 +515,6 @@ mibLoader([])
         sortSubroutine(arr[z].children)
       }
     }
-
-    // // sort by last number in oid
-    // if(args2[n] && args2[n].children) {
-    //   let len = args2[n].children[0].address.split('.').length - 1;
-
-    //   args2[n].children.sort(function(a,b) { 
-    //     return a.address.split('.')[len] - b.address.split('.')[len];
-    //   })
-    // }
-
-    // // if other addresses continue.
-    // if(grandChildren.length && args2[n] && args2[n].children) {
-    //   sortSubroutine(grandChildren, args2[n].children);
-    // }
     
   }
 
