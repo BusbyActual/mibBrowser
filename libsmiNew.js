@@ -7,7 +7,7 @@ const ArrayType = require('ref-array');
 const Enum = require('enum');
 const fs = require('fs');
 const resolve = require('path').resolve;
-
+const CircularJSON = require('circular-json');
 /* SmiLanguage -- language of an actual MIB module                           */
 const SmiLanguage = new Enum({
   SMI_LANGUAGE_UNKNOWN: 0 /* should not occur            */,
@@ -465,6 +465,10 @@ let getData = function () {
     }
     buff = SMILib.smiGetNextModule(buff);
   } 
+
+  //console.log(data);
+  fs.writeFileSync('test2.txt', CircularJSON.stringify(data))
+
   return data;
 }
 
@@ -535,26 +539,59 @@ mibLoader([])
   let sortSubroutine = function(arr) {
     
     let base = arr[0];
-    base.sise = arr[0].address.split('.').length;
+    base.size = arr[0].address.split('.').length;
     base.index = 0;
 
-    for (let n = 1; n < arr.length; n++) {
-      let address = arr[n].address.slice(0, base.address.length);
-      let len = arr[n].address.split('.').length;
+    fs.appendFileSync('test3.txt', CircularJSON.stringify(arr))
+    fs.appendFileSync('test3.txt', `
 
+    `);  
+
+    for (let n = 1; n < arr.length; n++) {
+      let address = arr[n].address.split('.').slice(0, base.size).join('.');
+      let len = arr[n].address.split('.').length;
+      let small = len < base.size ? len : base.size;
+
+       // fs.appendFileSync('test3.txt', 'before: ' + CircularJSON.stringify(n))
+       // fs.appendFileSync('test3.txt', 'base:   ' + arr.length + '     ' +  CircularJSON.stringify(base))
+       //           fs.appendFileSync('test3.txt', `
+
+       //  `);  
+       // fs.appendFileSync('test3.txt', 'address: ' + CircularJSON.stringify(address))
+       //                 fs.appendFileSync('test3.txt', `
+
+       //  `);  
+       // fs.appendFileSync('test3.txt', 'len: ' + CircularJSON.stringify(len))
+       //                 fs.appendFileSync('test3.txt', `
+
+       //  `);  
+       // fs.appendFileSync('test3.txt', 'small: ' + CircularJSON.stringify(small));
+       //                 fs.appendFileSync('test3.txt', `
+
+       //  `);  
+       // fs.appendFileSync('test3.txt',  'arr:  ' + arr.length + '     ' + CircularJSON.stringify(arr))
+
+      // if(address === "1.3.6.1.4.1.2566.127") {
+      //  // console.log(arr.slice(0,n+1), n)
+      // }
+    
+      console.log(n, address, base.address, arr[n].address)
       if (address === base.address) {
-        let temp = arr.splice(n, n + 1)[0];
+          // console.log( arr.slice(n-1,n+1))
+        let temp = arr.splice(n, 1)[0];
+       //console.log(temp)
         base.children.push(temp);
         n--;
 
         // if oid root is same length and the last char is bigger change base to bigger oid. ex 1.2 => 1.3
-      } else if (base.size === len && arr[n].address.split('.')[len] > base.address.split('.')[base.size]) {
+      } else  { // if (arr[n].address.split('.')[small - 1] > base.address.split('.')[small - 1]) {
+       //   console.log(arr[n])
+
         base = arr[n];
         base.size = len;
         base.index = n;
       } 
       
-
     }
 
     // for (let x = base.index; x < arr.length; x++) {
@@ -566,7 +603,7 @@ mibLoader([])
     //   } else if (base.size === len) {
 
     //     // if sibling update base
-    //     if (arr[x].address.split('.')[len] > base.address.split('.')[len]) {
+    //   if (arr[x].address.split('.')[len] > base.address.split('.')[len]) {
     //       base = arr[x];
     //       base.size = arr[n].address.split('.').length;
     //       base.index = n;
@@ -577,7 +614,14 @@ mibLoader([])
 
     for (let z = 0; z < arr.length; z++) {
       if (arr[z].children.length) {
-       sortSubroutine(arr[z].children)
+     //   console.log('arr ' + JSON.stringify(arr), ' base: ' + JSON.stringify(base))
+
+        //     fs.appendFileSync('test3.txt', 'base:  '  + CircularJSON.stringify(base))
+      //            fs.appendFileSync('test3.txt', `
+
+      // `);  
+     //  fs.appendFileSync('test3.txt', 'arr: ' + CircularJSON.stringify(arr))
+        sortSubroutine(arr[z].children)
       }
     }
 
@@ -615,10 +659,8 @@ mibLoader([])
 // var nodeBuff3 = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566.127');
 // var temp = '1.3.6.1.4.1.2566.127'.split('.').length;
 
-//console.log(SMILib)
-
+// console.log(SMILib)
 // console.log(nodeBuff2)
-
 // console.log(`   SmiDecl-> ${SmiDecl.get(smiNode.decl).key}`);
 // console.log(`   SmiAccess-> ${SmiAccess.get(smiNode.access).key}`);
 // console.log(`   SmiStatus-> ${SmiStatus.get(smiNode.status).key}`);
