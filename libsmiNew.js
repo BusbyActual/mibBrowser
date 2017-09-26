@@ -491,51 +491,6 @@ mibLoader([])
   }
 
 
-
-
-  //buggy has dupes 1.3 and ignores 0 && 0,0
-  // let sortSubroutine = function(args1, args2) {
-    
-
-  //   for (let n = 0; n < args2.length; n++) {
-  //     let addy2 = args2[n].address;
-  //     let curArgLen = addy2.split('.').length + 1;
-  //     let grandChildren = [];
-
-  //     for (let i = 0; i < args1.length; i++) {
-  //       let addy1 = args1[i].address.slice(0, addy2.length);
-  //       let tempArgLen = args1[i].address.split('.').length;
-
-  //       if (addy1 === addy2) {
-  //         let child = args1.splice(i, 1);
-  //         i--;
-
-  //         // is it a child or grandchild?
-  //         if(curArgLen === tempArgLen) {
-  //           args2[n].children ? args2[n].children.push(child[0]) : args2[n].children = child;
-  //         } else {
-  //           grandChildren.push(child[0]);
-  //         }
-  //       }
-      
-  //     }
-
-  //     // sort by last number in oid
-  //     if(args2[n] && args2[n].children) {
-  //       let len = args2[n].children[0].address.split('.').length - 1;
-
-  //       args2[n].children.sort(function(a,b) { 
-  //         return a.address.split('.')[len] - b.address.split('.')[len];
-  //       })
-  //     }
-  
-  //     // if other addresses continue.
-  //     if(grandChildren.length && args2[n] && args2[n].children) {
-  //       sortSubroutine(grandChildren, args2[n].children);
-  //     }
-  //   };
-  // }
-
   let sortSubroutine = function(arr) {
     
     let base = arr[0];
