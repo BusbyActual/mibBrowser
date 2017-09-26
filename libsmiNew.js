@@ -510,6 +510,7 @@ mibLoader([])
       
     }
 
+    // recurse and sort children
     for (let z = 0; z < arr.length; z++) {
       if (arr[z].children.length) {
         sortSubroutine(arr[z].children)
