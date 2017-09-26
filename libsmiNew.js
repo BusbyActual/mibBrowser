@@ -495,23 +495,21 @@ mibLoader([])
     
     let base = arr[0];
     base.size = arr[0].address.split('.').length;
- 
+    
+
     for (let n = 1; n < arr.length; n++) {
       let address = arr[n].address.split('.').slice(0, base.size).join('.');
       let len = arr[n].address.split('.').length;
       let small = len < base.size ? len : base.size;
 
+      // Compare address roots
       if (address === base.address) {
-          // console.log( arr.slice(n-1,n+1))
         let temp = arr.splice(n, 1)[0];
-       //console.log(temp)
         base.children.push(temp);
         n--;
 
         // if oid root is same length and the last char is bigger change base to bigger oid. ex 1.2 => 1.3
-      } else  { // if (arr[n].address.split('.')[small - 1] > base.address.split('.')[small - 1]) {
-       //   console.log(arr[n])
-
+      } else if (arr[n].address.split('.')[small - 1] > base.address.split('.')[small - 1]) {
         base = arr[n];
         base.size = len;
       } 
@@ -520,13 +518,6 @@ mibLoader([])
 
     for (let z = 0; z < arr.length; z++) {
       if (arr[z].children.length) {
-     //   console.log('arr ' + JSON.stringify(arr), ' base: ' + JSON.stringify(base))
-
-        //     fs.appendFileSync('test3.txt', 'base:  '  + CircularJSON.stringify(base))
-      //            fs.appendFileSync('test3.txt', `
-
-      // `);  
-     //  fs.appendFileSync('test3.txt', 'arr: ' + CircularJSON.stringify(arr))
         sortSubroutine(arr[z].children)
       }
     }
