@@ -442,7 +442,7 @@ let getData = function () {
 
     // original method: get all nodes + misc mib junk
     // let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
-    
+
     while (nodeBuff.length > 0) {
       let smiNode = nodeBuff.deref();
       let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
@@ -455,10 +455,10 @@ let getData = function () {
       data.push({
         'Node' : smiNode.name,
         'address' : oid,
-        'SmiDecl' : smiDecl,
-        'SmiAccess' : smiAccess,
-        'SmiStatus' : smiStatus,
-        'SmiNodekind' : smiNodeKind,
+        'SmiDecl' : smiDecl.split('_').pop(),
+        'SmiAccess' : smiAccess.split('_').pop(),
+        'SmiStatus' : smiStatus.split('_').pop(),
+        'SmiNodekind' : smiNodeKind.split('_').pop(),
         'Description' : smiNode.description,
         'Format' : smiNode.format,
         'children': []
