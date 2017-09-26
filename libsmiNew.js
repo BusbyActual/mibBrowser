@@ -501,30 +501,6 @@ mibLoader([])
       let len = arr[n].address.split('.').length;
       let small = len < base.size ? len : base.size;
 
-       // fs.appendFileSync('test3.txt', 'before: ' + CircularJSON.stringify(n))
-       // fs.appendFileSync('test3.txt', 'base:   ' + arr.length + '     ' +  CircularJSON.stringify(base))
-       //           fs.appendFileSync('test3.txt', `
-
-       //  `);  
-       // fs.appendFileSync('test3.txt', 'address: ' + CircularJSON.stringify(address))
-       //                 fs.appendFileSync('test3.txt', `
-
-       //  `);  
-       // fs.appendFileSync('test3.txt', 'len: ' + CircularJSON.stringify(len))
-       //                 fs.appendFileSync('test3.txt', `
-
-       //  `);  
-       // fs.appendFileSync('test3.txt', 'small: ' + CircularJSON.stringify(small));
-       //                 fs.appendFileSync('test3.txt', `
-
-       //  `);  
-       // fs.appendFileSync('test3.txt',  'arr:  ' + arr.length + '     ' + CircularJSON.stringify(arr))
-
-      // if(address === "1.3.6.1.4.1.2566.127") {
-      //  // console.log(arr.slice(0,n+1), n)
-      // }
-    
-      console.log(n, address, base.address, arr[n].address)
       if (address === base.address) {
           // console.log( arr.slice(n-1,n+1))
         let temp = arr.splice(n, 1)[0];
