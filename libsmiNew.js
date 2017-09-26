@@ -431,12 +431,18 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
 // figure out how to determine first meaningful node?
 let getData = function () {
   let data = [];
-  // let buff = SMILib.smiGetFirstModule();
   let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
+
+  // original method: get all nodes + misc mib junk
+  // let buff = SMILib.smiGetFirstModule();
+  
   while (buff.length > 0) {
     let smiModule = buff.deref();
-
     let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
+
+    // original method: get all nodes + misc mib junk
+    // let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
+    
     while (nodeBuff.length > 0) {
       let smiNode = nodeBuff.deref();
       let oid  = new Uint32Array(smiNode.oid.reinterpret(smiNode.oidlen * 4).buffer).join('.');
