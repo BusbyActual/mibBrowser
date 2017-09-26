@@ -1,6 +1,8 @@
 const mibs = require('./libsmiNew');
 const bodyParser = require('body-parser');
 const express = require('express');
+const fs = require('fs');
+const CircularJSON = require('circular-json');
 const app = express()
 
 // parse application/x-www-form-urlencoded
@@ -17,11 +19,15 @@ app.post('/mibs', function (req, res) {
   const body = req.body
   mibs.mibLoader(body.mibs)
 
-  let test = mibs.getData();
+  let data = mibs.getData();
 
-  mibs.sortSubroutine(test);
-  console.log(test)
-  res.send(`You sent: ${body.mibs}`)
+  data = mibs.polish(data);
+
+  mibs.sortSubroutine(data);
+  
+
+  fs.writeFileSync('test.txt', CircularJSON.stringify(data))
+  res.send(`You sent: ${body.mibs} ` + JSON.stringify(data))
 })
 
 app.listen(3000, function () {
