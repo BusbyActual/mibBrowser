@@ -540,13 +540,7 @@ mibLoader([])
     
     let base = arr[0];
     base.size = arr[0].address.split('.').length;
-    base.index = 0;
-
-    fs.appendFileSync('test3.txt', CircularJSON.stringify(arr))
-    fs.appendFileSync('test3.txt', `
-
-    `);  
-
+ 
     for (let n = 1; n < arr.length; n++) {
       let address = arr[n].address.split('.').slice(0, base.size).join('.');
       let len = arr[n].address.split('.').length;
@@ -589,28 +583,9 @@ mibLoader([])
 
         base = arr[n];
         base.size = len;
-        base.index = n;
       } 
       
     }
-
-    // for (let x = base.index; x < arr.length; x++) {
-    //   let address = arr[x].address.slice(0, base.length);
-    //   let len = arr[x].address.split('.').length;
-      
-    //   if (address === base.address) {
-    //     base.children.push(arr.slice(x, x + 1));
-    //   } else if (base.size === len) {
-
-    //     // if sibling update base
-    //   if (arr[x].address.split('.')[len] > base.address.split('.')[len]) {
-    //       base = arr[x];
-    //       base.size = arr[n].address.split('.').length;
-    //       base.index = n;
-    //       base.children = [];
-    //     }
-    //   }
-    // }
 
     for (let z = 0; z < arr.length; z++) {
       if (arr[z].children.length) {
