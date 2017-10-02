@@ -431,17 +431,17 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
 // figure out how to determine first meaningful node?
 let getData = function () {
   let data = [];
-  let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
+  // let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
 
   // original method: get all nodes + misc mib junk
-  // let buff = SMILib.smiGetFirstModule();
+  let buff = SMILib.smiGetFirstModule();
   
   while (buff.length > 0) {
     let smiModule = buff.deref();
-    let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
+    // let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
 
     // original method: get all nodes + misc mib junk
-    // let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
+    let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
 
     while (nodeBuff.length > 0) {
       let smiNode = nodeBuff.deref();
@@ -452,6 +452,7 @@ let getData = function () {
       let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
       
 
+    // split cuts off read only 
       data.push({
         'Node' : smiNode.name,
         'address' : oid,
@@ -486,12 +487,19 @@ mibLoader([])
           return item;
         }
     })
+    
+   // sortSubroutine(data);
 
     return data;
   }
-
-
+  
+  // order by mib OIDS
   let sortSubroutine = function(arr) {
+          
+    
+  };
+
+  let formatSubroutine = function(arr) {
     
     let base = arr[0];
     base.size = arr[0].address.split('.').length;
@@ -508,8 +516,8 @@ mibLoader([])
         base.children.push(temp);
         n--;
 
-        // if oid root is same length and the last char is bigger change base to bigger oid. ex 1.2 => 1.3
-      } else if (arr[n].address.split('.')[small - 1] > base.address.split('.')[small - 1]) {
+        // change to new oid  ex 1.2 => 1.3, 1.3.6.1 => 1.3.7
+      } else { 
         base = arr[n];
         base.size = len;
       } 
@@ -519,17 +527,19 @@ mibLoader([])
     // recurse and sort children
     for (let z = 0; z < arr.length; z++) {
       if (arr[z].children.length) {
-        sortSubroutine(arr[z].children)
+        formatSubroutine(arr[z].children)
       }
     }
     
   }
+
 
 module.exports = {
 
   mibLoader: mibLoader,
   getData: getData,
   sortSubroutine: sortSubroutine,
+  formatSubroutine: formatSubroutine,
   polish: polish
 
 }
