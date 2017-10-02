@@ -44,9 +44,8 @@ app.post('/mibs', function (req, res) {
 
   let data = mibs.getData();
 
-  data = mibs.polish(data);
-  
-  mibs.formatSubroutine(data);
+
+  //mibs.formatSubroutine(data);
 
   fs.writeFileSync('test.txt', CircularJSON.stringify(data))
   //res.send(`You sent: ${body.mibs} ` + JSON.stringify(data))
