@@ -431,15 +431,26 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
 // figure out how to determine first meaningful node?
 let getData = function () {
   let data = [];
-  // let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
+  let dictionary = { 1: {
+        'Node' : 'iso',
+        'address' : "1",
+        'SmiDecl' : "UNKNOWN",
+        'SmiAccess' : "UNKNOWN",
+        'SmiStatus' : "UNKNOWN",
+        'SmiNodekind' : "NODE",
+        'Description' : null,
+        'Format' : null,
+        'Parent' : null
+      }}; 
 
+  // let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
   // original method: get all nodes + misc mib junk
   let buff = SMILib.smiGetFirstModule();
   
   while (buff.length > 0) {
     let smiModule = buff.deref();
-    // let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
-
+    
+    //let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
     // original method: get all nodes + misc mib junk
     let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
 
@@ -450,7 +461,7 @@ let getData = function () {
       let smiAccess = SmiAccess.get(smiNode.access).key;
       let smiStatus = SmiStatus.get(smiNode.status).key;
       let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
-      
+      let parent = oid.split(".");
 
     // split cuts off read only 
       data.push({
@@ -462,8 +473,21 @@ let getData = function () {
         'SmiNodekind' : smiNodeKind.split('_').pop(),
         'Description' : smiNode.description,
         'Format' : smiNode.format,
-        'children': []
+        'children': [],
+        'Parent': parent.slice(0, parent.length - 1).join(".")
       });
+
+      dictionary[oid] = {
+        'Node' : smiNode.name,
+        'address' : oid,
+        'SmiDecl' : smiDecl.split('_').pop(),
+        'SmiAccess' : smiAccess.split('_').pop(),
+        'SmiStatus' : smiStatus.split('_').pop(),
+        'SmiNodekind' : smiNodeKind.split('_').pop(),
+        'Description' : smiNode.description,
+        'Format' : smiNode.format,
+        'Parent' : parent.slice(0, parent.length - 1).join(".")
+      };
 
       
       nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
@@ -471,7 +495,7 @@ let getData = function () {
     buff = SMILib.smiGetNextModule(buff);
   } 
 
-  return data;
+  return [data,dictionary];
 }
 
 
@@ -493,11 +517,6 @@ mibLoader([])
     return data;
   }
   
-  // order by mib OIDS
-  let sortSubroutine = function(arr) {
-          
-    
-  };
 
   let formatSubroutine = function(arr) {
     
@@ -538,7 +557,6 @@ module.exports = {
 
   mibLoader: mibLoader,
   getData: getData,
-  sortSubroutine: sortSubroutine,
   formatSubroutine: formatSubroutine,
   polish: polish
 
