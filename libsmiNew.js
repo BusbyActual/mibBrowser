@@ -430,6 +430,7 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
 
 // figure out how to determine first meaningful node?
 let getData = function () {
+
   let data = [];
   let dictionary = { 1: {
         'Node' : 'iso',
@@ -449,7 +450,7 @@ let getData = function () {
   
   while (buff.length > 0) {
     let smiModule = buff.deref();
-    
+
     //let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
     // original method: get all nodes + misc mib junk
     let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
@@ -461,37 +462,49 @@ let getData = function () {
       let smiAccess = SmiAccess.get(smiNode.access).key;
       let smiStatus = SmiStatus.get(smiNode.status).key;
       let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
-      let parent = oid.split(".");
+      let parentSplit = oid.split(".");
+      let parentOid = parentSplit.slice(0, parentSplit.length - 1).join(".");
 
-    // split cuts off read only 
+      // split cuts off read only -- recent move to camelcase
       data.push({
-        'Node' : smiNode.name,
+        'node' : smiNode.name,
         'address' : oid,
-        'SmiDecl' : smiDecl.split('_').pop(),
-        'SmiAccess' : smiAccess.split('_').pop(),
-        'SmiStatus' : smiStatus.split('_').pop(),
-        'SmiNodekind' : smiNodeKind.split('_').pop(),
-        'Description' : smiNode.description,
-        'Format' : smiNode.format,
-        'children': [],
-        'Parent': parent.slice(0, parent.length - 1).join(".")
+        'smiDecl' : smiDecl.split('_').pop(),
+        'smiAccess' : smiAccess.split('_').pop(),
+        'smiStatus' : smiStatus.split('_').pop(),
+        'smiNodekind' : smiNodeKind.split('_').pop(),
+        'description' : smiNode.description,
+        'format' : smiNode.format,
+        'children': false,
+        'parent': parentOid
       });
 
       dictionary[oid] = {
-        'Node' : smiNode.name,
+        'node' : smiNode.name,
         'address' : oid,
-        'SmiDecl' : smiDecl.split('_').pop(),
-        'SmiAccess' : smiAccess.split('_').pop(),
-        'SmiStatus' : smiStatus.split('_').pop(),
-        'SmiNodekind' : smiNodeKind.split('_').pop(),
-        'Description' : smiNode.description,
-        'Format' : smiNode.format,
-        'Parent' : parent.slice(0, parent.length - 1).join(".")
+        'smiDecl' : smiDecl.split('_').pop(),
+        'smiAccess' : smiAccess.split('_').pop(),
+        'smiStatus' : smiStatus.split('_').pop(),
+        'smiNodekind' : smiNodeKind.split('_').pop(),
+        'description' : smiNode.description,
+        'format' : smiNode.format,
+        'children': false,
+        'parent' : parentOid
       };
+
+      // update way objects are updated to not override child flag
+      if(dictionary[parentOid]) {
+        dictionary[parentOid].children = true;
+      } else {
+        dictionary[parentOid] = {
+          children: true
+        }
+      }
 
       
       nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
     }
+
     buff = SMILib.smiGetNextModule(buff);
   } 
 
@@ -501,24 +514,21 @@ let getData = function () {
 
 mibLoader([]) 
   
-  // remote dupes if any and null defaults
-  let polish = function(arr) {
-    let dictionary = {'0': 1, '0.0': 1};
-    
-    let data = arr.filter(function(item) {
-      if (!dictionary[item.address]) {
-          dictionary[item.address] = 1;
-          return item;
-        }
-    })
-    
-   // sortSubroutine(data);
+  let getChildren = (oid, dict) => {
+    let children = [];
 
-    return data;
+    for(var key in dict) {
+
+      if(dict[key].parent === oid) {
+        children.push(dict[key]);
+      }
+    }
+
+    return children;
   }
   
 
-  let formatSubroutine = function(arr) {
+  let formatSubroutine = (arr) => {
     
     let base = arr[0];
     base.size = arr[0].address.split('.').length;
@@ -558,6 +568,6 @@ module.exports = {
   mibLoader: mibLoader,
   getData: getData,
   formatSubroutine: formatSubroutine,
-  polish: polish
+  getChildren: getChildren
 
 }
