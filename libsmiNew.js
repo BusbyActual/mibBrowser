@@ -8,59 +8,60 @@ const Enum = require('enum');
 const fs = require('fs');
 const resolve = require('path').resolve;
 const CircularJSON = require('circular-json');
-/* SmiLanguage -- language of an actual MIB module                           */
+
+/* SmiLanguage -- language of an actual MIB module */
 const SmiLanguage = new Enum({
-  SMI_LANGUAGE_UNKNOWN: 0 /* should not occur            */,
+  SMI_LANGUAGE_UNKNOWN: 0 /* should not occur */,
   SMI_LANGUAGE_SMIV1: 1,
   SMI_LANGUAGE_SMIV2: 2,
   SMI_LANGUAGE_SMING: 3,
   SMI_LANGUAGE_SPPI: 4,
 });
 
-/* SmiBasetype -- base types of all languages                                */
+/* SmiBasetype -- base types of all languages */
 const SmiBasetype = new Enum({
-  SMI_BASETYPE_UNKNOWN: 0 /* should not occur            */,
-  SMI_BASETYPE_INTEGER32: 1 /* also SMIv1/v2 INTEGER       */,
+  SMI_BASETYPE_UNKNOWN: 0 /* should not occur */,
+  SMI_BASETYPE_INTEGER32: 1 /* also SMIv1/v2 INTEGER */,
   SMI_BASETYPE_OCTETSTRING: 2,
   SMI_BASETYPE_OBJECTIDENTIFIER: 3,
   SMI_BASETYPE_UNSIGNED32: 4,
-  SMI_BASETYPE_INTEGER64: 5 /* SMIng and SPPI              */,
-  SMI_BASETYPE_UNSIGNED64: 6 /* SMIv2, SMIng and SPPI       */,
-  SMI_BASETYPE_FLOAT32: 7 /* only SMIng                  */,
-  SMI_BASETYPE_FLOAT64: 8 /* only SMIng                  */,
-  SMI_BASETYPE_FLOAT128: 9 /* only SMIng                  */,
+  SMI_BASETYPE_INTEGER64: 5 /* SMIng and SPPI */,
+  SMI_BASETYPE_UNSIGNED64: 6 /* SMIv2, SMIng and SPPI */,
+  SMI_BASETYPE_FLOAT32: 7 /* only SMIng */,
+  SMI_BASETYPE_FLOAT64: 8 /* only SMIng */,
+  SMI_BASETYPE_FLOAT128: 9 /* only SMIng */,
   SMI_BASETYPE_ENUM: 10,
-  SMI_BASETYPE_BITS: 11 /* SMIv2, SMIng and SPPI       */,
-  SMI_BASETYPE_POINTER: 12 /* only SMIng                  */,
+  SMI_BASETYPE_BITS: 11 /* SMIv2, SMIng and SPPI */,
+  SMI_BASETYPE_POINTER: 12 /* only SMIng */,
 });
 
-/* SmiStatus -- values of status levels                                      */
+/* SmiStatus -- values of status levels */
 const SmiStatus = new Enum({
-  SMI_STATUS_UNKNOWN: 0 /* should not occur                     */,
-  SMI_STATUS_CURRENT: 1 /* only SMIv2, SMIng and SPPI           */,
-  SMI_STATUS_DEPRECATED: 2 /* SMIv1, SMIv2, SMIng and SPPI         */,
-  SMI_STATUS_MANDATORY: 3 /* only SMIv1                           */,
-  SMI_STATUS_OPTIONAL: 4 /* only SMIv1                           */,
-  SMI_STATUS_OBSOLETE: 5 /* SMIv1, SMIv2, SMIng and SPPI         */,
+  SMI_STATUS_UNKNOWN: 0 /* should not occur */,
+  SMI_STATUS_CURRENT: 1 /* only SMIv2, SMIng and SPPI */,
+  SMI_STATUS_DEPRECATED: 2 /* SMIv1, SMIv2, SMIng and SPPI */,
+  SMI_STATUS_MANDATORY: 3 /* only SMIv1 */,
+  SMI_STATUS_OPTIONAL: 4 /* only SMIv1 */,
+  SMI_STATUS_OBSOLETE: 5 /* SMIv1, SMIv2, SMIng and SPPI */,
 });
 
-/* SmiAccess -- values of access levels                                      */
+/* SmiAccess -- values of access levels */
 const SmiAccess = new Enum({
-  SMI_ACCESS_UNKNOWN: 0 /* should not occur                     */,
+  SMI_ACCESS_UNKNOWN: 0 /* should not occur */,
   SMI_ACCESS_NOT_IMPLEMENTED: 1 /* only for agent capability variations */,
-  SMI_ACCESS_NOT_ACCESSIBLE: 2 /* the values 2 to 5 are allowed to be  */,
-  SMI_ACCESS_NOTIFY: 3 /* compared by relational operators.    */,
+  SMI_ACCESS_NOT_ACCESSIBLE: 2 /* the values 2 to 5 are allowed to be */,
+  SMI_ACCESS_NOTIFY: 3 /* compared by relational operators. */,
   SMI_ACCESS_READ_ONLY: 4,
   SMI_ACCESS_READ_WRITE: 5,
-  SMI_ACCESS_INSTALL: 6 /* these three entries are only valid   */,
-  SMI_ACCESS_INSTALL_NOTIFY: 7 /* for SPPI                             */,
+  SMI_ACCESS_INSTALL: 6 /* these three entries are only valid */,
+  SMI_ACCESS_INSTALL_NOTIFY: 7 /* for SPPI */,
   SMI_ACCESS_REPORT_ONLY: 8,
-  SMI_ACCESS_EVENT_ONLY: 9 /* this entry is valid only for SMIng	 */,
+  SMI_ACCESS_EVENT_ONLY: 9 /* this entry is valid only for SMIng */,
 });
 
-/* SmiNodekind -- type or statement that leads to a definition               */
+/* SmiNodekind -- type or statement that leads to a definition */
 const SmiNodekind = ref.types.uint;
-const SMI_NODEKIND_UNKNOWN = 0x0000; /* should not occur             */
+const SMI_NODEKIND_UNKNOWN = 0x0000; /* should not occur */
 const SMI_NODEKIND_NODE = 0x0001;
 const SMI_NODEKIND_SCALAR = 0x0002;
 const SMI_NODEKIND_TABLE = 0x0004;
@@ -73,7 +74,7 @@ const SMI_NODEKIND_CAPABILITIES = 0x0100;
 const SMI_NODEKIND_ANY = 0xffff;
 
 const SmiNodekindEnum = new Enum({
-  SMI_NODEKIND_UNKNOWN: 0x0000 /* should not occur             */,
+  SMI_NODEKIND_UNKNOWN: 0x0000 /* should not occur */,
   SMI_NODEKIND_NODE: 0x0001,
   SMI_NODEKIND_SCALAR: 0x0002,
   SMI_NODEKIND_TABLE: 0x0004,
@@ -86,9 +87,9 @@ const SmiNodekindEnum = new Enum({
   SMI_NODEKIND_ANY: 0xffff,
 });
 
-/* SmiDecl -- type or statement that leads to a definition                   */
+/* SmiDecl -- type or statement that leads to a definition */
 const SmiDecl = new Enum({
-  SMI_DECL_UNKNOWN: 0 /* should not occur                    */,
+  SMI_DECL_UNKNOWN: 0 /* should not occur */,
   /* SMIv1/v2 ASN.1 statements and macros */
   SMI_DECL_IMPLICIT_TYPE: 1,
   SMI_DECL_TYPEASSIGNMENT: 2,
@@ -126,7 +127,7 @@ const SmiDecl = new Enum({
   SMI_DECL_EVENT: 47,
 });
 
-/* SmiIndexkind -- actual kind of a table row's index method                 */
+/* SmiIndexkind -- actual kind of a table row's index method  */
 const SmiIndexkind = new Enum({
   SMI_INDEX_UNKNOWN: 0,
   SMI_INDEX_INDEX: 1,
@@ -428,6 +429,9 @@ let mibLoader = (mibs) => {
 
 }
 
+/*
+  Make dictionary 
+*/
 let getData = () => {
 
   let data = [];
@@ -443,15 +447,11 @@ let getData = () => {
         'parent' : null
       }}; 
 
-  // let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
-  // original method: get all nodes + misc mib junk
   let buff = SMILib.smiGetFirstModule();
   
   while (buff.length > 0) {
     let smiModule = buff.deref();
 
-    //let nodeBuff =  SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
-    // original method: get all nodes + misc mib junk
     let nodeBuff = SMILib.smiGetFirstNode(buff, SMI_NODEKIND_ANY);
 
     while (nodeBuff.length > 0) {
@@ -491,8 +491,6 @@ let getData = () => {
         dictionary[oid].parent = parentOid;
       };
 
-     
-      
       if (dictionary[parentOid]) {
         dictionary[parentOid].children = true;
       } else {
@@ -501,7 +499,6 @@ let getData = () => {
         }
       }
 
-      
       nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
     }
 
@@ -533,6 +530,7 @@ let getChildren = (oid, dict) => {
 
   return children.sort((a, b) => { return a.address - b.address });
 }
+
 
 module.exports = {
 
