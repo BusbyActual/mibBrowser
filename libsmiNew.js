@@ -432,15 +432,15 @@ let getData = () => {
 
   let data = [];
   let dictionary = { 1: {
-        'Node' : 'iso',
+        'node' : 'iso',
         'address' : "1",
-        'SmiDecl' : "UNKNOWN",
-        'SmiAccess' : "UNKNOWN",
-        'SmiStatus' : "UNKNOWN",
-        'SmiNodekind' : "NODE",
-        'Description' : null,
-        'Format' : null,
-        'Parent' : null
+        'smiDecl' : "UNKNOWN",
+        'smiAccess' : "UNKNOWN",
+        'smiStatus' : "UNKNOWN",
+        'smiNodekind' : "NODE",
+        'description' : null,
+        'format' : null,
+        'parent' : null
       }}; 
 
   // let buff = SMILib.smiGetNode(ref.NULL, '1.3.6.1.4.1.2566');
@@ -511,8 +511,9 @@ let getData = () => {
   return dictionary;
 }
 
-
-  
+/*
+  null gets you tree roots then
+*/  
 let getChildren = (oid, dict) => {
   let children = [];
 
@@ -530,7 +531,7 @@ let getChildren = (oid, dict) => {
     }
   }
 
-  return children;
+  return children.sort((a, b) => { return a.address - b.address });
 }
 
 
