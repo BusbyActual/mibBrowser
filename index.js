@@ -52,19 +52,6 @@ app.post('/mibs', function (req, res) {
   res.send(JSON.stringify(children))
 })
 
-app.post('/mmibs/children', function (req, res) {
-  const body = req.body
-  mibs.mibLoader(body.mibs)
-
-  let data = mibs.getData();
-
-
-  //mibs.formatSubroutine(data);
-
-  fs.writeFileSync('test.txt', CircularJSON.stringify(data))
-  //res.send(`You sent: ${body.mibs} ` + JSON.stringify(data))
-  res.send(JSON.stringify(data))
-})
 
 app.post('/upload', upload.array(), function(req, res, next) {
  
