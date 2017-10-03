@@ -419,7 +419,7 @@ let mibLoader = (mibs) => {
   console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
   console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
   console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
-
+      
   /*
     Load user's mibs
   */
