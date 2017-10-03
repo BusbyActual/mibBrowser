@@ -43,7 +43,7 @@ app.post('/mibs', function (req, res) {
   mibs.mibLoader(body.mibs)
 
   let data = mibs.getData();
-  let children = mibs.getChildren("1.3.6.1.4.1.2566", data);
+  let children = mibs.getChildren(body.oid, data);
 
   //mibs.formatSubroutine(data);
 
