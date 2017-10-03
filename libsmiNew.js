@@ -464,19 +464,36 @@ let getData = function () {
       let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
       let parentSplit = oid.split(".");
       let parentOid = parentSplit.slice(0, parentSplit.length - 1).join(".");
+
+      if(!dictionary[oid]) {
+
+        dictionary[oid] = {
+          'node' : smiNode.name,
+          'address' : oid,
+          'smiDecl' : smiDecl.split('_').pop(),
+          'smiAccess' : smiAccess.split('_').pop(),
+          'smiStatus' : smiStatus.split('_').pop(),
+          'smiNodekind' : smiNodeKind.split('_').pop(),
+          'description' : smiNode.description,
+          'format' : smiNode.format,
+          'children': false,
+          'parent' : parentOid
+        };
+      } else {
+
+          dictionary[oid].name = smiNode.name;
+          dictionary[oid].address = oid;
+          dictionary[oid].smiDecl = smiDecl.split('_').pop();
+          dictionary[oid].smiAccess = smiAccess.split('_').pop();
+          dictionary[oid].smiStatus = smiStatus.split('_').pop();
+          dictionary[oid].smiNodekind = smiNodeKind.split('_').pop();
+          dictionary[oid].description = smiNode.description;
+          dictionary[oid].format = smiNode.format;
+          dictionary[oid].parent = parentOid;
+        };
+
+      }
       
-      dictionary[oid] = {
-        'node' : smiNode.name,
-        'address' : oid,
-        'smiDecl' : smiDecl.split('_').pop(),
-        'smiAccess' : smiAccess.split('_').pop(),
-        'smiStatus' : smiStatus.split('_').pop(),
-        'smiNodekind' : smiNodeKind.split('_').pop(),
-        'description' : smiNode.description,
-        'format' : smiNode.format,
-        'children': false,
-        'parent' : parentOid
-      };
 
       // update way objects are updated to not override child flag
       if(dictionary[parentOid]) {
