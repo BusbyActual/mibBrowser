@@ -407,28 +407,27 @@ SMILib.smiSetPath('C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projec
 console.log('smiGetPath - %s', SMILib.smiGetPath());
 
 
-  let mibLoader = (mibs) => {
-    /*
-      Load default mibs
-    */
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-SMI'));
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-TC'));
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-CONF'));
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1155-SMI'));
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
-    console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
+let mibLoader = (mibs) => {
+  /*
+    Load default mibs
+  */
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-SMI'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-TC'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('SNMPV2-CONF'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1155-SMI'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
 
-    /*
-      Load user's mibs
-    */
-    for (let i = 0; i < mibs.length; i++) {
-      console.log('smiLoadModule - %s', SMILib.smiLoadModule(mibs[i]));
-    }
-
+  /*
+    Load user's mibs
+  */
+  for (let i = 0; i < mibs.length; i++) {
+    console.log('smiLoadModule - %s', SMILib.smiLoadModule(mibs[i]));
   }
 
-// figure out how to determine first meaningful node?
+}
+
 let getData = () => {
 
   let data = [];
@@ -512,56 +511,65 @@ let getData = () => {
   return dictionary;
 }
 
-mibLoader([]) 
+
   
-  let getChildren = (oid, dict) => {
-    let children = [];
+let getChildren = (oid, dict) => {
+  let children = [];
 
+  if (oid !== null) {
     for(var key in dict) {
-
       if(dict[key].parent === oid) {
         children.push(dict[key]);
       }
     }
-
-    return children;
-  }
-  
-
-  let formatSubroutine = (arr) => {
-    
-    let base = arr[0];
-    base.size = arr[0].address.split('.').length;
-    
-
-    for (let n = 1; n < arr.length; n++) {
-      let address = arr[n].address.split('.').slice(0, base.size).join('.');
-      let len = arr[n].address.split('.').length;
-      let small = len < base.size ? len : base.size;
-
-      // Compare address roots
-      if (address === base.address) {
-        let temp = arr.splice(n, 1)[0];
-        base.children.push(temp);
-        n--;
-
-        // change to new oid  ex 1.2 => 1.3, 1.3.6.1 => 1.3.7
-      } else { 
-        base = arr[n];
-        base.size = len;
-      } 
-      
-    }
-
-    // recurse and sort children
-    for (let z = 0; z < arr.length; z++) {
-      if (arr[z].children.length) {
-        formatSubroutine(arr[z].children)
+  } else {
+    for(var key in dict) {
+      if(dict[key].parent === "" || dict[key].parent === null) {
+        children.push(dict[key]);
       }
     }
+  }
+
+  return children;
+}
+
+
+let formatSubroutine = (arr) => {
+  
+  let base = arr[0];
+  base.size = arr[0].address.split('.').length;
+  
+
+  for (let n = 1; n < arr.length; n++) {
+    let address = arr[n].address.split('.').slice(0, base.size).join('.');
+    let len = arr[n].address.split('.').length;
+    let small = len < base.size ? len : base.size;
+
+    // Compare address roots
+    if (address === base.address) {
+      let temp = arr.splice(n, 1)[0];
+      base.children.push(temp);
+      n--;
+
+      // change to new oid  ex 1.2 => 1.3, 1.3.6.1 => 1.3.7
+    } else { 
+      base = arr[n];
+      base.size = len;
+    } 
     
   }
 
+  // recurse and sort children
+  for (let z = 0; z < arr.length; z++) {
+    if (arr[z].children.length) {
+      formatSubroutine(arr[z].children)
+    }
+  }
+  
+}
+
+
+mibLoader([]) 
 
 module.exports = {
 
