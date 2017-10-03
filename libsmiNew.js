@@ -168,7 +168,7 @@ const SmiValue = StructType({
 
 const SmiValuePtr = ref.refType(SmiValue);
 
-/* SmiNamedNumber -- a named number; for enumeration and bitset types        */
+/* SmiNamedNumber -- a named number; for enumeration and bitset types */
 const SmiNamedNumber = StructType({
   name: 'string',
   value: SmiValue,
@@ -176,7 +176,7 @@ const SmiNamedNumber = StructType({
 
 const SmiNamedNumberPtr = ref.refType(SmiNamedNumber);
 
-/* SmiRange -- a min-max value range; for subtyping of sizes or numbers      */
+/* SmiRange -- a min-max value range; for subtyping of sizes or numbers */
 const SmiRange = StructType({
   minValue: SmiValue,
   maxValue: SmiValue,
@@ -184,7 +184,7 @@ const SmiRange = StructType({
 
 const SmiRangePtr = ref.refType(SmiRange);
 
-/* SmiRevision -- content of a single module's revision clause               */
+/* SmiRevision -- content of a single module's revision clause */
 const SmiRevision = StructType({
   date: 'longlong',
   description: 'string',
@@ -192,7 +192,7 @@ const SmiRevision = StructType({
 
 const SmiRevisionPtr = ref.refType(SmiRevision);
 
-/* SmiImport -- an imported descriptor                                       */
+/* SmiImport -- an imported descriptor */
 const SmiImport = StructType({
   module: 'string',
   name: 'string',
@@ -200,7 +200,7 @@ const SmiImport = StructType({
 
 const SmiImportPtr = ref.refType(SmiImport);
 
-/* SmiMacro -- the main structure of a SMIv1/v2 macro or SMIng extension     */
+/* SmiMacro -- the main structure of a SMIv1/v2 macro or SMIng extension */
 const SmiMacro = StructType({
   name: 'string',
   decl: 'int',
@@ -212,7 +212,7 @@ const SmiMacro = StructType({
 
 const SmiMacroPtr = ref.refType(SmiMacro);
 
-/* SmiIdentity -- the main structure of a SMIng Identity.		     */
+/* SmiIdentity -- the main structure of a SMIng Identity. */
 /* NOTE: Not to be confused with SMIv2 MODULE-IDENTITY */
 const SmiIdentity = StructType({
   name: 'string',
@@ -224,7 +224,7 @@ const SmiIdentity = StructType({
 
 const SmiIdentityPtr = ref.refType(SmiIdentity);
 
-/* SmiType -- the main structure of a type definition (also base types)      */
+/* SmiType -- the main structure of a type definition (also base types) */
 /* also SMIng attributes      */
 const SmiType = StructType({
   name: 'string',
@@ -240,7 +240,7 @@ const SmiType = StructType({
 
 const SmiTypePtr = ref.refType(SmiType);
 
-/* SmiNode -- the main structure of any clause that defines a node           */
+/* SmiNode -- the main structure of any clause that defines a node */
 const SmiNode = StructType({
   name: 'string',
   oidlen: 'uint',
@@ -261,7 +261,7 @@ const SmiNode = StructType({
 
 const SmiNodePtr = ref.refType(SmiNode);
 
-/* SmiElement -- an item in a list (row index column, notification object)   */
+/* SmiElement -- an item in a list (row index column, notification object) */
 const SmiElement = StructType(
   {
     /* no visible attributes */
@@ -270,14 +270,14 @@ const SmiElement = StructType(
 
 const SmiElementPtr = ref.refType(SmiElement);
 
-/* SmiOption -- an optional group in a compliance statement                  */
+/* SmiOption -- an optional group in a compliance statement */
 const SmiOption = StructType({
   description: 'string',
 });
 
 const SmiOptionPtr = ref.refType(SmiOption);
 
-/* SmiRefinement -- a refined object in a compliance statement               */
+/* SmiRefinement -- a refined object in a compliance statement */
 const SmiRefinement = StructType({
   access: 'int',
   description: 'string',
@@ -285,7 +285,7 @@ const SmiRefinement = StructType({
 
 const SmiRefinementPtr = ref.refType(SmiRefinement);
 
-/* SmiClass -- main structure for SMIng class statement               */
+/* SmiClass -- main structure for SMIng class statement */
 const SmiClass = StructType({
   name: 'string',
   decl: 'int',
@@ -296,7 +296,7 @@ const SmiClass = StructType({
 
 const SmiClassPtr = ref.refType(SmiClass);
 
-/* SmiClass -- main structure for class attribute               */
+/* SmiClass -- main structure for class attribute */
 const SmiAttribute = StructType({
   name: 'string',
   basetype: 'int',
@@ -407,7 +407,7 @@ SMILib.smiSetPath('C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projec
 
 console.log('smiGetPath - %s', SMILib.smiGetPath());
 
-
+/* This doesn't load mi2 files properly. Need to get detailed list of mibs to load and their correct order  */
 let mibLoader = (mibs) => {
   /*
     Load default mibs
@@ -419,7 +419,17 @@ let mibLoader = (mibs) => {
   console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1212'));
   console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC-1215'));
   console.log('smiLoadModule - %s', SMILib.smiLoadModule('RFC1213-MIB'));
-      
+  /*
+    Begin loading static mib setup
+  */
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-COMMON-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-XX9-SMI-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-XX9-COMMON-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-XX9-TC-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-XX9-AIR-COOLING-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-XX9-ATSC-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-XX9-ATV-MIB'));
+  console.log('smiLoadModule - %s', SMILib.smiLoadModule('RS-XX9-DAB-MIB'));
   /*
     Load user's mibs
   */
