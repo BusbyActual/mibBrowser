@@ -354,7 +354,7 @@ const SMILib = ffi.Library('./libsmi-0.4.8/build/libsmi.dll', {
   smiGetNextRefinement: [SmiRefinementPtr, [SmiRefinementPtr]],
 });
 
-function smiValue2String(smiValue) {
+let smiValue2String = smiValue => {
   let vValue;
 
   switch (smiValue.basetype) {
@@ -407,7 +407,7 @@ SMILib.smiSetPath('C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projec
 console.log('smiGetPath - %s', SMILib.smiGetPath());
 
 
-  let mibLoader = function  (mibs) {
+  let mibLoader = (mibs) => {
     /*
       Load default mibs
     */
@@ -429,7 +429,7 @@ console.log('smiGetPath - %s', SMILib.smiGetPath());
   }
 
 // figure out how to determine first meaningful node?
-let getData = function () {
+let getData = () => {
 
   let data = [];
   let dictionary = { 1: {
@@ -465,7 +465,7 @@ let getData = function () {
       let parentSplit = oid.split(".");
       let parentOid = parentSplit.slice(0, parentSplit.length - 1).join(".");
 
-      if(!dictionary[oid]) {
+      if (!dictionary[oid]) {
 
         dictionary[oid] = {
           'node' : smiNode.name,
@@ -481,22 +481,20 @@ let getData = function () {
         };
       } else {
 
-          dictionary[oid].name = smiNode.name;
-          dictionary[oid].address = oid;
-          dictionary[oid].smiDecl = smiDecl.split('_').pop();
-          dictionary[oid].smiAccess = smiAccess.split('_').pop();
-          dictionary[oid].smiStatus = smiStatus.split('_').pop();
-          dictionary[oid].smiNodekind = smiNodeKind.split('_').pop();
-          dictionary[oid].description = smiNode.description;
-          dictionary[oid].format = smiNode.format;
-          dictionary[oid].parent = parentOid;
-        };
+        dictionary[oid].name = smiNode.name;
+        dictionary[oid].address = oid;
+        dictionary[oid].smiDecl = smiDecl.split('_').pop();
+        dictionary[oid].smiAccess = smiAccess.split('_').pop();
+        dictionary[oid].smiStatus = smiStatus.split('_').pop();
+        dictionary[oid].smiNodekind = smiNodeKind.split('_').pop();
+        dictionary[oid].description = smiNode.description;
+        dictionary[oid].format = smiNode.format;
+        dictionary[oid].parent = parentOid;
+      };
 
-      }
+     
       
-
-      // update way objects are updated to not override child flag
-      if(dictionary[parentOid]) {
+      if (dictionary[parentOid]) {
         dictionary[parentOid].children = true;
       } else {
         dictionary[parentOid] = {
@@ -509,11 +507,10 @@ let getData = function () {
     }
 
     buff = SMILib.smiGetNextModule(buff);
-  } 
+  }
 
   return dictionary;
 }
-
 
 mibLoader([]) 
   
