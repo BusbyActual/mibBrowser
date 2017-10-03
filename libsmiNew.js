@@ -517,7 +517,7 @@ let getData = () => {
 let getChildren = (oid, dict) => {
   let children = [];
 
-  if (oid !== null) {
+  if (oid) {
     for(var key in dict) {
       if(dict[key].parent === oid) {
         children.push(dict[key]);
@@ -534,49 +534,10 @@ let getChildren = (oid, dict) => {
   return children.sort((a, b) => { return a.address - b.address });
 }
 
-
-let formatSubroutine = (arr) => {
-  
-  let base = arr[0];
-  base.size = arr[0].address.split('.').length;
-  
-
-  for (let n = 1; n < arr.length; n++) {
-    let address = arr[n].address.split('.').slice(0, base.size).join('.');
-    let len = arr[n].address.split('.').length;
-    let small = len < base.size ? len : base.size;
-
-    // Compare address roots
-    if (address === base.address) {
-      let temp = arr.splice(n, 1)[0];
-      base.children.push(temp);
-      n--;
-
-      // change to new oid  ex 1.2 => 1.3, 1.3.6.1 => 1.3.7
-    } else { 
-      base = arr[n];
-      base.size = len;
-    } 
-    
-  }
-
-  // recurse and sort children
-  for (let z = 0; z < arr.length; z++) {
-    if (arr[z].children.length) {
-      formatSubroutine(arr[z].children)
-    }
-  }
-  
-}
-
-
-mibLoader([]) 
-
 module.exports = {
 
   mibLoader: mibLoader,
   getData: getData,
-  formatSubroutine: formatSubroutine,
   getChildren: getChildren
 
 }
