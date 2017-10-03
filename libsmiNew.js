@@ -464,21 +464,7 @@ let getData = function () {
       let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
       let parentSplit = oid.split(".");
       let parentOid = parentSplit.slice(0, parentSplit.length - 1).join(".");
-
-      // split cuts off read only -- recent move to camelcase
-      data.push({
-        'node' : smiNode.name,
-        'address' : oid,
-        'smiDecl' : smiDecl.split('_').pop(),
-        'smiAccess' : smiAccess.split('_').pop(),
-        'smiStatus' : smiStatus.split('_').pop(),
-        'smiNodekind' : smiNodeKind.split('_').pop(),
-        'description' : smiNode.description,
-        'format' : smiNode.format,
-        'children': false,
-        'parent': parentOid
-      });
-
+      
       dictionary[oid] = {
         'node' : smiNode.name,
         'address' : oid,
@@ -508,7 +494,7 @@ let getData = function () {
     buff = SMILib.smiGetNextModule(buff);
   } 
 
-  return [data,dictionary];
+  return dictionary;
 }
 
 
