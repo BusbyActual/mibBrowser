@@ -488,6 +488,7 @@ let getData = () => {
       let smiStatus = SmiStatus.get(smiNode.status).key;
       let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
       let parentOid = createParent(oid);
+      let exists = false;
 
       if (!dictionary[oid]) {
 
@@ -515,7 +516,7 @@ let getData = () => {
             'smiNodekind' : "NODE",
             'description' : null,
             'format' : null,
-            'parent' : null,
+            'parent' : createParent(parentOid),
             'hasChildren': true,
             'children': []
           }
@@ -533,13 +534,34 @@ let getData = () => {
         dictionary[oid].parent = parentOid;
       };
 
-      if (dictionary[parentOid]) {
-        dictionary[parentOid].hasChildren = true;
-      } else {
-        dictionary[parentOid] = {
-          hasChildren: true
+
+      
+        
+      
+      let parentSubroutine = oid => {
+
+        if (!dictionary[oid] && oid.length) {
+
+          dictionary[oid] = {
+            'node' : "UNKNOWN",
+            'address' : oid,
+            'smiDecl' : "UNKNOWN",
+            'smiAccess' : "UNKNOWN",
+            'smiStatus' : "UNKNOWN",
+            'smiNodekind' : "NODE",
+            'description' : null,
+            'format' : null,
+            'parent' : createParent(oid),
+            'hasChildren': true,
+            'children': []
+          };
+
+          parentSubroutine(createParent(oid));
         }
       }
+
+      parentSubroutine(createParent(parentOid));
+     
 
       nodeBuff = SMILib.smiGetNextNode(nodeBuff, SMI_NODEKIND_ANY);
     }
@@ -553,7 +575,7 @@ let getData = () => {
 /*
   Connect all oids to a parent
 */
-let createParent = (oid) => {
+let createParent = oid => {
   let parentSplit = oid.split(".");
   let parentOid = parentSplit.slice(0, parentSplit.length - 1).join(".");
 
