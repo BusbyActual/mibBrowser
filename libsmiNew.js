@@ -654,7 +654,7 @@ let buildTreeObj = dict => {
       children.forEach( child => {
         node.children.push(child);
         delete dict[child.address];
-        subroutine(child.address, node);
+        subroutine(child.address, child);
       })
     }
   }
@@ -672,6 +672,7 @@ module.exports = {
   mibLoader: mibLoader,
   getData: getData,
   getChildren: getChildren,
-  buildTree: buildTree
+  buildTree: buildTree,
+  buildTreeObj: buildTreeObj 
 
 }
