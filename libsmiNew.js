@@ -404,8 +404,8 @@ console.log('smiInit - %d', ret);
 
 SMILib.smiSetPath('C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/iana;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/irtf;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/site;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/tubs;C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/test');
 
-
 console.log('smiGetPath - %s', SMILib.smiGetPath());
+
 
 /* This doesn't load mi2 files properly. Need to get detailed list of mibs to load and their correct order  */
 let mibLoader = (mibs) => {
@@ -445,17 +445,33 @@ let mibLoader = (mibs) => {
 let getData = () => {
 
   let data = [];
-  let dictionary = { 1: {
-        'node' : 'iso',
-        'address' : "1",
-        'smiDecl' : "UNKNOWN",
-        'smiAccess' : "UNKNOWN",
-        'smiStatus' : "UNKNOWN",
-        'smiNodekind' : "NODE",
-        'description' : null,
-        'format' : null,
-        'parent' : null
-      }}; 
+  let dictionary = { 
+    0: {
+      'node' : 'null',
+      'address' : "0",
+      'smiDecl' : "UNKNOWN",
+      'smiAccess' : "UNKNOWN",
+      'smiStatus' : "UNKNOWN",
+      'smiNodekind' : "NODE",
+      'description' : null,
+      'format' : null,
+      'parent' : null,
+      'hasChildren': false,
+      'children': []
+    },
+    1: {
+      'node' : 'iso',
+      'address' : "1",
+      'smiDecl' : "UNKNOWN",
+      'smiAccess' : "UNKNOWN",
+      'smiStatus' : "UNKNOWN",
+      'smiNodekind' : "NODE",
+      'description' : null,
+      'format' : null,
+      'parent' : null,
+      'hasChildren': false,
+      'children': []
+    }}; 
 
   let buff = SMILib.smiGetFirstModule();
   
@@ -485,8 +501,9 @@ let getData = () => {
           'smiNodekind' : smiNodeKind.split('_').pop(),
           'description' : smiNode.description,
           'format' : smiNode.format,
-          'children': false,
-          'parent' : parentOid
+          'hasChildren': false,
+          'parent' : parentOid,
+          'children': []
         };
       } else {
 
@@ -502,10 +519,10 @@ let getData = () => {
       };
 
       if (dictionary[parentOid]) {
-        dictionary[parentOid].children = true;
+        dictionary[parentOid].hasChildren = true;
       } else {
         dictionary[parentOid] = {
-          children: true
+          hasChildren: true
         }
       }
 
@@ -538,14 +555,38 @@ let getChildren = (oid, dict) => {
     }
   }
 
-  return children.sort((a, b) => { return a.address - b.address });
+  return children.sort((a, b) => { return a.address - b.address; });
 }
 
+let buildTree = (oid, dict) => {
+  let tree = [];
+
+  tree = getChildren(oid, dict);
+
+  let subroutine = (oid, node) => {
+    var temp = getChildren(oid, dict);
+    console.log(temp, node, 'beep')
+    node.children.concat(temp);
+    console.log(node.children, ' boop')
+
+    node.children.forEach( child => {
+      child.children.concat(subroutine(child.address, child));
+    });
+    
+  };
+
+  tree.forEach( child => {
+    subroutine(child.address, child);
+  });
+
+  return tree;
+}
 
 module.exports = {
 
   mibLoader: mibLoader,
   getData: getData,
-  getChildren: getChildren
+  getChildren: getChildren,
+  buildTree: buildTree
 
 }
