@@ -640,6 +640,33 @@ let buildTree = (oid, dict) => {
   return tree;
 }
 
+/*
+  hydrate front end with dictionary
+*/
+let buildTreeObj = dict => {
+  let tree = [];
+
+  tree = getChildren(null, dict);
+
+  let subroutine = (oid, node) => {
+    if (Object.keys(dict).length) {
+      let children = getChildren(oid, dict);
+      children.forEach( child => {
+        node.children.push(child);
+        delete dict[child.address];
+        subroutine(child.address, node);
+      })
+    }
+  }
+
+  tree.forEach( node => {
+    subroutine(node.address, node);
+    delete dict[node.address];
+  });
+
+  return tree;
+}
+
 module.exports = {
 
   mibLoader: mibLoader,
