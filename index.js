@@ -77,6 +77,26 @@ app.post('/children', function (req, res) {
   res.send(JSON.stringify(children))
 })
 
+app.post('/tree', function (req, res) {
+  const body = req.body
+  body.mibs ? 1===1 : body.mibs = [];
+
+    mibs.mibLoader(body.mibs)
+
+  
+
+  let data = mibs.getData();
+ 
+  let children = mibs.buildTreeObj(data);
+
+
+  // fs.writeFileSync('test.txt', CircularJSON.stringify(data))
+  // res.send(`You sent: ${body.mibs} ` + JSON.stringify(data))
+
+  res.send(JSON.stringify(children))
+})
+
+
 
 // app.post('/upload', upload.array(), function(req, res, next) {
  
