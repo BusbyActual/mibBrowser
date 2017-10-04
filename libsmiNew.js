@@ -456,7 +456,7 @@ let getData = () => {
       'description' : null,
       'format' : null,
       'parent' : null,
-      'hasChildren': false,
+      'hasChildren': true,
       'children': []
     },
     1: {
@@ -469,7 +469,7 @@ let getData = () => {
       'description' : null,
       'format' : null,
       'parent' : null,
-      'hasChildren': false,
+      'hasChildren': true,
       'children': []
     }}; 
 
@@ -565,12 +565,10 @@ let buildTree = (oid, dict) => {
 
   let subroutine = (oid, node) => {
     var temp = getChildren(oid, dict);
-    console.log(temp, node, 'beep')
-    node.children.concat(temp);
-    console.log(node.children, ' boop')
-
+    console.log(temp)
+    node.children = node.children.concat(temp);
     node.children.forEach( child => {
-      child.children.concat(subroutine(child.address, child));
+      child.children = child.children.concat(subroutine(child.address, child));
     });
     
   };
