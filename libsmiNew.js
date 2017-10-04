@@ -487,8 +487,7 @@ let getData = () => {
       let smiAccess = SmiAccess.get(smiNode.access).key;
       let smiStatus = SmiStatus.get(smiNode.status).key;
       let smiNodeKind = SmiNodekindEnum.get(smiNode.nodekind).key;
-      let parentSplit = oid.split(".");
-      let parentOid = parentSplit.slice(0, parentSplit.length - 1).join(".");
+      let parentOid = createParent(oid);
 
       if (!dictionary[oid]) {
 
@@ -505,6 +504,22 @@ let getData = () => {
           'parent' : parentOid,
           'children': []
         };
+
+        if(!dictionary[parentOid]) {
+          dictionary[parentOid] = {
+            'node' : "UNKNOWN",
+            'address' : parentOid,
+            'smiDecl' : "UNKNOWN",
+            'smiAccess' : "UNKNOWN",
+            'smiStatus' : "UNKNOWN",
+            'smiNodekind' : "NODE",
+            'description' : null,
+            'format' : null,
+            'parent' : null,
+            'hasChildren': true,
+            'children': []
+          }
+        }
       } else {
 
         dictionary[oid].name = smiNode.name;
@@ -536,20 +551,30 @@ let getData = () => {
 }
 
 /*
+  Connect all oids to a parent
+*/
+let createParent = (oid) => {
+  let parentSplit = oid.split(".");
+  let parentOid = parentSplit.slice(0, parentSplit.length - 1).join(".");
+
+  return parentOid;
+}
+
+/*
   null gets you tree roots then
 */  
 let getChildren = (oid, dict) => {
   let children = [];
 
   if (oid) {
-    for(var key in dict) {
-      if(dict[key].parent === oid) {
+    for (var key in dict) {
+      if (dict[key].parent === oid) {
         children.push(dict[key]);
       }
     }
   } else {
-    for(var key in dict) {
-      if(dict[key].parent === "" || dict[key].parent === null) {
+    for (var key in dict) {
+      if (dict[key].parent === "" || dict[key].parent === null) {
         children.push(dict[key]);
       }
     }
@@ -565,12 +590,23 @@ let buildTree = (oid, dict) => {
 
   let subroutine = (oid, node) => {
     var temp = getChildren(oid, dict);
-    console.log(temp)
-    node.children = node.children.concat(temp);
-    node.children.forEach( child => {
-      child.children = child.children.concat(subroutine(child.address, child));
-    });
     
+
+    if (temp) {
+      node.children = node.children.concat(temp);
+    }
+
+    if (oid==='1.3') {
+      console.log(temp)
+      console.log(node.children)
+    }
+
+
+    for (let i = 0; i < node.children.length; i++) {
+      let child = node.children[i];
+      child.children = child.children.concat(subroutine(child.address, child));
+    }
+
   };
 
   tree.forEach( child => {
