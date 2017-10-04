@@ -41,9 +41,33 @@ app.get('/', function (req, res) {
 
 app.post('/mibs', function (req, res) {
   const body = req.body
-  mibs.mibLoader(body.mibs)
+  body.mibs ? 1===1 : body.mibs = [];
+  //if (body.mibs && Array.isArray(body.mibs)) {
+    mibs.mibLoader(body.mibs)
+  // }
+  
 
   let data = mibs.getData();
+
+  let children = mibs.buildTree(body.oid, data);
+
+
+  // fs.writeFileSync('test.txt', CircularJSON.stringify(data))
+  // res.send(`You sent: ${body.mibs} ` + JSON.stringify(data))
+
+  res.send(JSON.stringify(children))
+})
+
+app.post('/children', function (req, res) {
+  const body = req.body
+  body.mibs ? 1===1 : body.mibs = [];
+
+    mibs.mibLoader(body.mibs)
+
+  
+
+  let data = mibs.getData();
+ 
   let children = mibs.getChildren(body.oid, data);
 
 
