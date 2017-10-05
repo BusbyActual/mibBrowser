@@ -495,10 +495,10 @@ let getData = () => {
         dictionary[oid] = {
           'node' : smiNode.name,
           'address' : oid,
-          'smiDecl' : smiDecl.split('_').pop(),
-          'smiAccess' : smiAccess.split('_').pop(),
-          'smiStatus' : smiStatus.split('_').pop(),
-          'smiNodekind' : smiNodeKind.split('_').pop(),
+          'smiDecl' : smiDecl.split('_').slice(2).join('_'),
+          'smiAccess' : smiAccess.split('_').slice(2).join('_'),
+          'smiStatus' : smiStatus.split('_').slice(2).join('_'),
+          'smiNodekind' : smiNodeKind.split('_').slice(2).join('_'),
           'description' : smiNode.description,
           'format' : smiNode.format,
           'hasChildren': false,
@@ -526,10 +526,10 @@ let getData = () => {
 
         dictionary[oid].name = smiNode.name;
         dictionary[oid].address = oid;
-        dictionary[oid].smiDecl = smiDecl.split('_').pop();
-        dictionary[oid].smiAccess = smiAccess.split('_').pop();
-        dictionary[oid].smiStatus = smiStatus.split('_').pop();
-        dictionary[oid].smiNodekind = smiNodeKind.split('_').pop();
+        dictionary[oid].smiDecl = smiDecl.split('_').slice(2).join('_');
+        dictionary[oid].smiAccess = smiAccess.split('_').slice(2).join('_');
+        dictionary[oid].smiStatus = smiStatus.split('_').slice(2).join('_');
+        dictionary[oid].smiNodekind = smiNodeKind.split('_').slice(2).join('_');
         dictionary[oid].description = smiNode.description;
         dictionary[oid].format = smiNode.format;
         dictionary[oid].parent = parentOid;
@@ -653,12 +653,12 @@ let buildTreeObj = dict => {
   let subroutine = (oid, node) => {
     if (Object.keys(dict).length) {
       let children = getChildren(oid, dict);
-      
+
       children.forEach( child => {
 
         /* Make smaller oids visible */
         let address = child.address.split('.');
-        address <= 7 ? child.collapsed = false : 1===1;
+        address.length <= 7 ? child.collapsed = false : 1===1;
         
         /* Pull distinct node */   
         node.children.push(child);
