@@ -503,7 +503,8 @@ let getData = () => {
           'format' : smiNode.format,
           'hasChildren': false,
           'parent' : parentOid,
-          'children': []
+          'children': [],
+          "collapsed" : true
         };
 
         if(!dictionary[parentOid]) {
@@ -552,7 +553,8 @@ let getData = () => {
             'format' : null,
             'parent' : createParent(oid),
             'hasChildren': true,
-            'children': []
+            'children': [],
+            "collapsed" : true
           };
 
           parentSubroutine(createParent(oid));
@@ -651,9 +653,17 @@ let buildTreeObj = dict => {
   let subroutine = (oid, node) => {
     if (Object.keys(dict).length) {
       let children = getChildren(oid, dict);
+      
       children.forEach( child => {
+
+        /* Make smaller oids visible */
+        let address = child.address.split('.');
+        address <= 7 ? child.collapsed = false : 1===1;
+        
+        /* Pull distinct node */   
         node.children.push(child);
         delete dict[child.address];
+
         subroutine(child.address, child);
       })
     }
