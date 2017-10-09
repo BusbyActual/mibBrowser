@@ -447,7 +447,7 @@ let getData = () => {
   let data = [];
   let dictionary = { 
     0: {
-      'node' : 'null',
+      'text' : 'null',
       'address' : "0",
       'smiDecl' : "UNKNOWN",
       'smiAccess' : "UNKNOWN",
@@ -457,10 +457,11 @@ let getData = () => {
       'format' : null,
       'parent' : null,
       'hasChildren': true,
-      'children': []
+       "expanded" : true,
+      'items': []
     },
     1: {
-      'node' : 'iso',
+      'text' : 'iso',
       'address' : "1",
       'smiDecl' : "UNKNOWN",
       'smiAccess' : "UNKNOWN",
@@ -470,7 +471,8 @@ let getData = () => {
       'format' : null,
       'parent' : null,
       'hasChildren': true,
-      'children': []
+       "expanded" : true,
+      'items': []
     }}; 
 
   let buff = SMILib.smiGetFirstModule();
@@ -493,7 +495,7 @@ let getData = () => {
       if (!dictionary[oid]) {
 
         dictionary[oid] = {
-          'node' : smiNode.name,
+          'text' : smiNode.name,
           'address' : oid,
           'smiDecl' : smiDecl.split('_').slice(2).join('_'),
           'smiAccess' : smiAccess.split('_').slice(2).join('_'),
@@ -503,13 +505,13 @@ let getData = () => {
           'format' : smiNode.format,
           'hasChildren': false,
           'parent' : parentOid,
-          'children': [],
-          "collapsed" : true
+          'items': [],
+          "expanded"  : true
         };
 
         if(!dictionary[parentOid]) {
           dictionary[parentOid] = {
-            'node' : "UNKNOWN",
+            'text' : "UNKNOWN",
             'address' : parentOid,
             'smiDecl' : "UNKNOWN",
             'smiAccess' : "UNKNOWN",
@@ -519,7 +521,7 @@ let getData = () => {
             'format' : null,
             'parent' : createParent(parentOid),
             'hasChildren': true,
-            'children': []
+            'items': []
           }
         }
       } else {
@@ -543,7 +545,7 @@ let getData = () => {
         if (!dictionary[oid] && oid.length) {
 
           dictionary[oid] = {
-            'node' : "UNKNOWN",
+            'text' : "UNKNOWN",
             'address' : oid,
             'smiDecl' : "UNKNOWN",
             'smiAccess' : "UNKNOWN",
@@ -553,8 +555,8 @@ let getData = () => {
             'format' : null,
             'parent' : createParent(oid),
             'hasChildren': true,
-            'children': [],
-            "collapsed" : true
+            'items': [],
+            "expanded" : true
           };
 
           parentSubroutine(createParent(oid));
@@ -658,10 +660,10 @@ let buildTreeObj = dict => {
 
         /* Make smaller oids visible */
         let address = child.address.split('.');
-        address.length <= 7 ? child.collapsed = false : 1===1;
+        address.length <= 7 ? child.expanded = false : 1===1;
         
         /* Pull distinct node */   
-        node.children.push(child);
+        node.items.push(child);
         delete dict[child.address];
 
         subroutine(child.address, child);
