@@ -457,7 +457,7 @@ let getData = () => {
       'format' : null,
       'parent' : null,
       'expanded' : true,
-      'children': []
+      'childNodes': []
     },
     1: {
       'text' : 'iso',
@@ -470,7 +470,7 @@ let getData = () => {
       'format' : null,
       'parent' : null,
       'expanded' : true,
-      'children': []
+      'childNodes': []
     }}; 
 
   let buff = SMILib.smiGetFirstModule();
@@ -503,7 +503,7 @@ let getData = () => {
           'format' : smiNode.format,
           'parent' : parentOid,
           'expanded' : false,
-          'children': []
+          'childNodes': []
           
         };
 
@@ -519,7 +519,7 @@ let getData = () => {
             'format' : null,
             'parent' : createParent(parentOid),
             'expanded' : false,
-            'children': []
+            'childNodes': []
           }
         }
       } else {
@@ -553,7 +553,7 @@ let getData = () => {
             'format' : null,
             'parent' : createParent(oid),
             'expanded' : false,
-            'children': []
+            'childNodes': []
           };
 
           parentSubroutine(createParent(oid));
@@ -628,7 +628,7 @@ let buildTree = dict => {
         address.length <= 7 ? child.expanded = true : 1===1;
         
         /* Pull distinct node */   
-        node.items.push(child);
+        node.childNodes.push(child);
         delete dict[child.address];
 
         subroutine(child.address, child);
