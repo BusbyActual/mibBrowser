@@ -87,7 +87,7 @@ app.post('/tree', function (req, res) {
 
   let data = mibs.getData();
  
-  let children = mibs.buildTreeObj(data);
+  let children = mibs.buildTree(data);
 
 
   // fs.writeFileSync('test.txt', CircularJSON.stringify(data))
