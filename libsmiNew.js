@@ -457,7 +457,8 @@ let getData = () => {
       'format' : null,
       'parent' : null,
       'expanded' : true,
-      'childNodes': []
+      'childNodes': [],
+      'spriteCssClass': 'rootIcon'
     },
     1: {
       'text' : 'iso',
@@ -470,7 +471,8 @@ let getData = () => {
       'format' : null,
       'parent' : null,
       'expanded' : true,
-      'childNodes': []
+      'childNodes': [],
+      'spriteCssClass': 'rootIcon'
     }}; 
 
   let buff = SMILib.smiGetFirstModule();
@@ -504,8 +506,8 @@ let getData = () => {
           'parent' : parentOid,
           'expanded' : false,
           'childNodes': []
-          
         };
+        dictionary[oid].spriteCssClass = addClass(dictionary[oid]);
 
         if(!dictionary[parentOid]) {
           dictionary[parentOid] = {
@@ -533,6 +535,7 @@ let getData = () => {
         dictionary[oid].description = smiNode.description;
         dictionary[oid].format = smiNode.format;
         dictionary[oid].parent = parentOid;
+        dictionary[oid].spriteCssClass = addClass(dictionary[oid]);
       };
 
       /*
@@ -608,6 +611,54 @@ let getChildren = (oid, dict) => {
   return children.sort((a, b) => { return a.address - b.address; });
 }
 
+/*
+  null gets you tree roots. Otherwise grab all children by parent key
+*/  
+let addClass = (node) => {
+  let classLabel = '';
+
+  if (node.smiNodeKind === 'NODE') {
+
+    if (node.smiDecl === 'MODULEIDENTITY') {
+      classLabel = 'moduleIcon';
+    } else {
+      classLabel = 'branchIcon';
+    }
+    
+  } else if (node.smiNodeKind === 'SCALAR' || node.smiNodeKind === 'COLUMN') {
+
+     if (node.smiAccess === 'READ_ONLY') {
+      classLabel = 'leafReadOnlyIcon';
+     } else if (node.smiAccess === 'READ_WRITE') {
+      classLabel = 'leafReadWriteIcon';
+     } else if (node.smiAccess === 'NOTIFY') {
+      classLabel = 'leafNotifyIcon';
+     } else if (node.smiAccess === 'NOT_ACCESSIBLE' || node.smiAccess === 'NOT_IMPLEMENTED' || node.smiAccess === 'UNKNOWN') {
+      classLabel = 'leafUnknownIcon';
+     }
+
+  } else if (node.smiNodeKind === 'GROUP') {
+    
+      if (node.smiDecl === 'MODULEIDENTITY') {
+        classLabel = 'notificationGroupIcon';
+      } else {
+        classLabel = 'groupIcon';
+      }
+
+  } else if (node.smiNodeKind === 'NOTIFICATION') {
+    classLabel = 'notificationIcon';
+  } else if (node.smiNodeKind === 'ROW') {
+    classLabel = 'rowIcon';
+  } else if (node.smiNodeKind === 'TABLE') {
+    classLabel = 'tableIcon';
+  } else if (node.smiNodeKind === 'COMPLIANCE') {
+    classLabel = 'complianceIcon';
+  } else {
+    classLabel = 'unknownIcon';
+  }
+
+  return classLabel;
+}
 
 /*
   hydrate front end with dictionary
