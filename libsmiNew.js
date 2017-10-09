@@ -586,7 +586,7 @@ let createParent = oid => {
 }
 
 /*
-  null gets you tree roots then
+  null gets you tree roots. Otherwise grab all children by parent key
 */  
 let getChildren = (oid, dict) => {
   let children = [];
@@ -608,43 +608,11 @@ let getChildren = (oid, dict) => {
   return children.sort((a, b) => { return a.address - b.address; });
 }
 
-let buildTree = (oid, dict) => {
-  let tree = [];
-
-  tree = getChildren(oid, dict);
-
-  let subroutine = (oid, node) => {
-    var temp = getChildren(oid, dict);
-    
-
-    if (temp) {
-      node.children = node.children.concat(temp);
-    }
-
-    if (oid==='1.3') {
-      console.log(temp)
-      console.log(node.children)
-    }
-
-
-    for (let i = 0; i < node.children.length; i++) {
-      let child = node.children[i];
-      child.children = child.children.concat(subroutine(child.address, child));
-    }
-
-  };
-
-  tree.forEach( child => {
-    subroutine(child.address, child);
-  });
-
-  return tree;
-}
 
 /*
   hydrate front end with dictionary
 */
-let buildTreeObj = dict => {
+let buildTree = dict => {
   let tree = [];
 
   tree = getChildren(null, dict);
@@ -681,7 +649,6 @@ module.exports = {
   mibLoader: mibLoader,
   getData: getData,
   getChildren: getChildren,
-  buildTree: buildTree,
-  buildTreeObj: buildTreeObj 
+  buildTree: buildTree
 
 }
