@@ -552,9 +552,8 @@ let getData = () => {
             'description' : null,
             'format' : null,
             'parent' : createParent(oid),
-            'hasChildren': true,
-            'items': [],
-            "expanded" : false
+            'expanded' : false,
+            'children': []
           };
 
           parentSubroutine(createParent(oid));
