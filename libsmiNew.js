@@ -456,7 +456,7 @@ let getData = () => {
       'description' : null,
       'format' : null,
       'parent' : null,
-      'expanded' : false,
+      'expanded' : true,
       'children': []
     },
     1: {
@@ -469,7 +469,7 @@ let getData = () => {
       'description' : null,
       'format' : null,
       'parent' : null,
-      'expanded' : false,
+      'expanded' : true,
       'children': []
     }}; 
 
@@ -501,10 +501,10 @@ let getData = () => {
           'smiNodekind' : smiNodeKind.split('_').slice(2).join('_'),
           'description' : smiNode.description,
           'format' : smiNode.format,
-          'hasChildren': false,
           'parent' : parentOid,
-          'items': [],
-          "expanded"  : true
+          'expanded' : false,
+          'children': []
+          
         };
 
         if(!dictionary[parentOid]) {
@@ -518,8 +518,8 @@ let getData = () => {
             'description' : null,
             'format' : null,
             'parent' : createParent(parentOid),
-            'hasChildren': true,
-            'items': []
+            'expanded' : false,
+            'children': []
           }
         }
       } else {
