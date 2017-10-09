@@ -456,9 +456,8 @@ let getData = () => {
       'description' : null,
       'format' : null,
       'parent' : null,
-      'hasChildren': true,
-       "expanded" : true,
-      'items': []
+      'expanded' : false,
+      'children': []
     },
     1: {
       'text' : 'iso',
@@ -470,9 +469,8 @@ let getData = () => {
       'description' : null,
       'format' : null,
       'parent' : null,
-      'hasChildren': true,
-       "expanded" : true,
-      'items': []
+      'expanded' : false,
+      'children': []
     }}; 
 
   let buff = SMILib.smiGetFirstModule();
@@ -556,7 +554,7 @@ let getData = () => {
             'parent' : createParent(oid),
             'hasChildren': true,
             'items': [],
-            "expanded" : true
+            "expanded" : false
           };
 
           parentSubroutine(createParent(oid));
@@ -660,7 +658,7 @@ let buildTreeObj = dict => {
 
         /* Make smaller oids visible */
         let address = child.address.split('.');
-        address.length <= 7 ? child.expanded = false : 1===1;
+        address.length <= 7 ? child.expanded = true : 1===1;
         
         /* Pull distinct node */   
         node.items.push(child);
