@@ -657,23 +657,21 @@ let addClass = (node) => {
     classLabel = 'unknownIcon';
   }
  
- //console.log(node, classLabel, node.smiNodeKind === 'NODE', Object.keys(node))
- if(node.smiNodeKind) {
-   console.log(node.smiNodeKind.split(''))
- }
   return classLabel;
 }
 
 /*
   hydrate front end with dictionary
 */
-let buildTree = dict => {
+let buildTree = (dict, start) => {
   let tree = [];
 
   tree = getChildren(null, dict);
 
   let subroutine = (oid, node) => {
     if (Object.keys(dict).length) {
+      node.address === start ? node.selected = true : 1==1;
+
       let children = getChildren(oid, dict);
 
       children.forEach( child => {
@@ -681,7 +679,8 @@ let buildTree = dict => {
         /* Make smaller oids visible */
         let address = child.address.split('.');
         address.length <= 7 ? child.expanded = true : 1===1;
-        
+        child.address === start ? child.selected = true : 1==1;
+
         /* Pull distinct node */   
         node.childNodes.push(child);
         delete dict[child.address];
