@@ -80,14 +80,13 @@ app.post('/children', function (req, res) {
 app.post('/tree', function (req, res) {
   const body = req.body
   body.mibs ? 1===1 : body.mibs = [];
-
-    mibs.mibLoader(body.mibs)
+  mibs.mibLoader(body.mibs)
 
   
 
   let data = mibs.getData();
  
-  let children = mibs.buildTree(data);
+  let children = mibs.buildTree(data, body.oid);
 
 
   // fs.writeFileSync('test.txt', CircularJSON.stringify(data))
