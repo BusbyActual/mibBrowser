@@ -447,7 +447,7 @@ let getData = () => {
   let data = [];
   let dictionary = { 
     0: {
-      'text' : 'null',
+      'text' : 'ccit',
       'address' : "0",
       'smiDecl' : "UNKNOWN",
       'smiAccess' : "UNKNOWN",
@@ -535,7 +535,7 @@ let getData = () => {
         dictionary[oid].description = smiNode.description;
         dictionary[oid].format = smiNode.format;
         dictionary[oid].parent = parentOid;
-        dictionary[oid].spriteCssClass = addClass(dictionary[oid]);
+       // dictionary[oid].spriteCssClass = addClass(dictionary[oid]);
       };
 
       /*
@@ -617,7 +617,7 @@ let getChildren = (oid, dict) => {
 let addClass = (node) => {
   let classLabel = '';
 
-  if (node.smiNodeKind === 'NODE') {
+  if (node.smiNodekind === 'NODE') {
 
     if (node.smiDecl === 'MODULEIDENTITY') {
       classLabel = 'moduleIcon';
@@ -625,7 +625,7 @@ let addClass = (node) => {
       classLabel = 'branchIcon';
     }
     
-  } else if (node.smiNodeKind === 'SCALAR' || node.smiNodeKind === 'COLUMN') {
+  } else if (node.smiNodekind === 'SCALAR' || node.smiNodekind === 'COLUMN') {
 
      if (node.smiAccess === 'READ_ONLY') {
       classLabel = 'leafReadOnlyIcon';
@@ -637,7 +637,7 @@ let addClass = (node) => {
       classLabel = 'leafUnknownIcon';
      }
 
-  } else if (node.smiNodeKind === 'GROUP') {
+  } else if (node.smiNodekind === 'GROUP') {
     
       if (node.smiDecl === 'MODULEIDENTITY') {
         classLabel = 'notificationGroupIcon';
@@ -645,18 +645,22 @@ let addClass = (node) => {
         classLabel = 'groupIcon';
       }
 
-  } else if (node.smiNodeKind === 'NOTIFICATION') {
+  } else if (node.smiNodekind === 'NOTIFICATION') {
     classLabel = 'notificationIcon';
   } else if (node.smiNodeKind === 'ROW') {
     classLabel = 'rowIcon';
-  } else if (node.smiNodeKind === 'TABLE') {
+  } else if (node.smiNodekind === 'TABLE') {
     classLabel = 'tableIcon';
-  } else if (node.smiNodeKind === 'COMPLIANCE') {
+  } else if (node.smiNodekind === 'COMPLIANCE') {
     classLabel = 'complianceIcon';
   } else {
     classLabel = 'unknownIcon';
   }
-
+ 
+ //console.log(node, classLabel, node.smiNodeKind === 'NODE', Object.keys(node))
+ if(node.smiNodeKind) {
+   console.log(node.smiNodeKind.split(''))
+ }
   return classLabel;
 }
 
