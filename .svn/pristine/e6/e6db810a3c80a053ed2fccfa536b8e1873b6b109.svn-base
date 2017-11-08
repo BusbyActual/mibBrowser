@@ -1,0 +1,28 @@
+{
+  "name": "mibhub",
+  "version": "1.0.0",
+  "description": "Cloud based mib parser",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "cors": "latest",
+    "circular-json": "latest",
+    "enum": "latest",
+    "express": "latest",
+    "ref": "latest",
+    "ref-array": "latest",
+    "ref-struct": "latest",
+    "ref-union": "latest",
+    "ffi": "latest",
+    "fs": "latest",
+    "path": "latest",
+    "util": "latest"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

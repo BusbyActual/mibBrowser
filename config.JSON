@@ -1,0 +1,2 @@
+{"ENV_VARS":{"version":"1.0.0","serviceBase":"http://10.105.10.71","apiUrl":"/api/v1","apiToken":"/api/v1/token","debug":true,"build":0,"svnRevision":0, "mibPath": ["C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/ietf", "C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/iana", "C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/irtf", "C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/site", "C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/tubs", "C:/Data/Projects/libsmi/libsmi-0.4.8/mibs/test"], "mibOrder": []}}
+

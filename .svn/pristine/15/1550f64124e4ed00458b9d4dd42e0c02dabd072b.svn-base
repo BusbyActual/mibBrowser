@@ -1,0 +1,30 @@
+// read the mainifest json
+var manifest = JSON.parse(require('fs').readFileSync('./manifest', "utf8"));
+
+// Shared env vars in all environments 
+var shared = {
+    version : manifest.version,
+    serviceBase: process.env.SERVICE_BASE || '',
+    apiUrl: process.env.API_URL || '/api/v1',
+    apiToken: process.env.API_TOKEN || '/api/v1/token',
+    debug: (process.env.DEBUG === 'true') || false,
+    build: process.env.BUILD_NUMBER || 0,
+    svnRevision: process.env.SVN_REVISION || 0,
+    mibPath: process.env.MIB_PATH || [],
+    mibOrder: process.env.MIB_ORDER || []
+};
+
+
+var environments = {
+    development: {
+      ENV_VARS: shared
+    },
+    staging: {
+      ENV_VARS: shared
+    },
+    production: {
+      ENV_VARS: shared
+    }
+};
+
+module.exports = environments; 

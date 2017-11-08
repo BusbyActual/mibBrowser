@@ -1,0 +1,13 @@
+{
+  "product": "SLSCloudControls",
+  "version": "1.0.0",
+  "targetRepoUrl": "https://svn.nfbconsulting.com/svn/artifacts/SLS/GPX-Pro/NFBC/SLSCloudControls",
+  "artifacts": [
+    {
+      "name":  "SLSCloudControls",
+      "source": "./dist/SLSCloudControls.zip",
+      "dest": "SLSCloudControls.zip"
+    }
+  ],
+  "dependencies": [  ]
+}
